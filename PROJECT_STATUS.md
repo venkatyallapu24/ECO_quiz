@@ -30,6 +30,7 @@
 - **Commits on `main`**:
   1. `fff1e32` ("docs: establish EcoQuest project baseline")
   2. `6fd9a20` ("feat(app): establish Stage 2 application foundation, routes, and tests")
+  3. `c8b0e71` ("feat(ui,landing): implement Stage 3 design system and Stage 4 public landing page")
 - **Current Branch**: `main`
 - **Configured Remote**: None configured locally. Remote target identified as `https://github.com/venkatyallapu24/ECO_quiz.git` (HTTP 200 reachable), pending authorization to attach.
 
