@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { UserProfile, UserProgression, DailyMission, Badge, GamificationRewardOutcome, Challenge } from '@/types';
+import { UserProfile, UserProgression, DailyMission, Badge, GamificationRewardOutcome, Challenge, QuizAttemptHistoryItem } from '@/types';
 import { gamificationService, GamificationState, CANONICAL_BADGES } from '@/services/gamificationService';
 import { challengeService } from '@/services/challengeService';
 import { QuizSessionSummary } from '@/services/quizService';
@@ -10,6 +10,7 @@ interface AuthContextType {
   dailyMissions: DailyMission[];
   unlockedBadges: Badge[];
   challenges: Challenge[];
+  quizHistory: QuizAttemptHistoryItem[];
   isAuthenticated: boolean;
   isBackendConnected: boolean;
   signIn: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
@@ -23,6 +24,8 @@ interface AuthContextType {
   joinChallenge: (challengeId: string) => { success: boolean; error?: string };
   leaveChallenge: (challengeId: string) => { success: boolean; error?: string };
   toggleLeaderboardPrivacy: () => void;
+  updateProfile: (updates: { displayName?: string; avatarUrl?: string | null }) => { success: boolean; error?: string };
+  setMockRole: (role: 'user' | 'admin') => void;
 }
 
 const mockProfile: UserProfile = {
@@ -36,12 +39,40 @@ const mockProfile: UserProfile = {
   createdAt: '2026-10-26T00:00:00Z',
 };
 
+const initialQuizHistory: QuizAttemptHistoryItem[] = [
+  {
+    id: 'att-hist-1',
+    categoryId: 'climate',
+    categoryName: 'Climate & Atmosphere',
+    mode: 'timed',
+    difficulty: 'medium',
+    score: 9,
+    totalQuestions: 10,
+    accuracyPercent: 90,
+    xpAwarded: 235,
+    completedAt: '2026-10-26T14:30:00Z',
+  },
+  {
+    id: 'att-hist-2',
+    categoryId: 'energy',
+    categoryName: 'Clean Energy & Grid',
+    mode: 'practice',
+    difficulty: 'easy',
+    score: 10,
+    totalQuestions: 10,
+    accuracyPercent: 100,
+    xpAwarded: 150,
+    completedAt: '2026-10-25T11:15:00Z',
+  },
+];
+
 const AuthContext = createContext<AuthContextType>({
   user: null,
   progression: null,
   dailyMissions: [],
   unlockedBadges: [],
   challenges: [],
+  quizHistory: [],
   isAuthenticated: false,
   isBackendConnected: false,
   signIn: async () => ({ success: false }),
@@ -55,6 +86,8 @@ const AuthContext = createContext<AuthContextType>({
   joinChallenge: () => ({ success: false }),
   leaveChallenge: () => ({ success: false }),
   toggleLeaderboardPrivacy: () => {},
+  updateProfile: () => ({ success: false }),
+  setMockRole: () => {},
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -65,8 +98,33 @@ export const AppProviders: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [user, setUser] = useState<UserProfile | null>(mockProfile);
   const [gamificationState, setGamificationState] = useState<GamificationState>(() => gamificationService.getState());
   const [challenges, setChallenges] = useState<Challenge[]>(() => challengeService.getChallenges());
+  const [quizHistory, setQuizHistory] = useState<QuizAttemptHistoryItem[]>(() => initialQuizHistory);
 
   const isBackendConnected = supabaseAuthService.isConfigured();
+
+  const updateProfile = (updates: { displayName?: string; avatarUrl?: string | null }): { success: boolean; error?: string } => {
+    if (!user) {
+      return { success: false, error: 'User is not authenticated.' };
+    }
+    if (updates.displayName !== undefined && updates.displayName.trim().length === 0) {
+      return { success: false, error: 'Display name cannot be empty.' };
+    }
+
+    setUser((prev) =>
+      prev
+        ? {
+            ...prev,
+            displayName: updates.displayName?.trim() || prev.displayName,
+            avatarUrl: updates.avatarUrl !== undefined ? updates.avatarUrl : prev.avatarUrl,
+          }
+        : null
+    );
+    return { success: true };
+  };
+
+  const setMockRole = (role: 'user' | 'admin') => {
+    setUser((prev) => (prev ? { ...prev, role } : null));
+  };
 
   const signIn = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
     if (isBackendConnected) {
@@ -172,6 +230,21 @@ export const AppProviders: React.FC<{ children: ReactNode }> = ({ children }) =>
       });
     }
 
+    // Record in local quiz history
+    const historyItem: QuizAttemptHistoryItem = {
+      id: session.attemptId || `att-${Date.now()}`,
+      categoryId: session.categoryId,
+      categoryName: session.categoryName,
+      mode: session.mode,
+      difficulty: session.difficulty,
+      score: session.score,
+      totalQuestions: session.totalQuestions,
+      accuracyPercent: session.accuracyPercent,
+      xpAwarded: outcome.xpAwarded,
+      completedAt: new Date().toISOString(),
+    };
+    setQuizHistory((prev) => [historyItem, ...prev]);
+
     setChallenges(challengeService.getChallenges());
     setGamificationState(gamificationService.getState());
     return outcome;
@@ -213,6 +286,7 @@ export const AppProviders: React.FC<{ children: ReactNode }> = ({ children }) =>
         dailyMissions: gamificationState.dailyMissions,
         unlockedBadges,
         challenges,
+        quizHistory,
         isAuthenticated: !!user,
         isBackendConnected,
         signIn,
@@ -226,6 +300,8 @@ export const AppProviders: React.FC<{ children: ReactNode }> = ({ children }) =>
         joinChallenge,
         leaveChallenge,
         toggleLeaderboardPrivacy,
+        updateProfile,
+        setMockRole,
       }}
     >
       {children}

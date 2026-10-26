@@ -12,6 +12,7 @@ import { LibraryPage } from '@/pages/LibraryPage';
 import { ChallengesPage } from '@/pages/ChallengesPage';
 import { LeaderboardPage } from '@/pages/LeaderboardPage';
 import { ProfilePage } from '@/pages/ProfilePage';
+import { AdminPage } from '@/pages/AdminPage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
 
 export const App: React.FC = () => {
@@ -33,6 +34,9 @@ export const App: React.FC = () => {
               <Route path="/quiz/play" element={<QuizSessionPage />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/settings" element={<ProfilePage />} />
+
+              {/* Role-Protected Administration Route */}
+              <Route path="/admin" element={<AdminPage />} />
 
               {/* 404 Route */}
               <Route path="*" element={<NotFoundPage />} />

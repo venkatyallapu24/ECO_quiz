@@ -134,10 +134,10 @@ Criteria must be marked only as:
 
 | # | Criterion | Status | Evidence / Verification Method |
 |---|---|---|---|
-| 10.1 | Educational article library searchable and categorized | **NOT RUN** | Future stage |
-| 10.2 | User profile settings (avatar, display name, timezone, privacy) functional | **NOT RUN** | Future stage |
-| 10.3 | Protected admin dashboard enforces server-side role authorization | **NOT RUN** | Future stage |
-| 10.4 | Question and article creation/editing validated with citations | **NOT RUN** | Future stage |
+| 10.1 | Educational article library searchable and categorized | **PASS** | Verified in `articleService.ts`, `LibraryPage.tsx`, and `ContentLibraryAndAdmin.test.tsx`: Search across title/summary/takeaways, 7 environmental categories, reading progress tracking, idempotent mission `m3` ("Eco Scholar") integration with zero duplicate rewards, reader modal with verified empirical citations. |
+| 10.2 | User profile settings (avatar, display name, timezone, privacy) functional | **PASS** | Verified in `ProfilePage.tsx` and `ContentLibraryAndAdmin.test.tsx`: Student pseudonym and avatar selection, leaderboard privacy toggle (`isPublicLeaderboard`), view evaluation history, badges, and learning activity. Server-owned fields (`role`, `xp`, `level`, `streak`) strictly protected from client manipulation. |
+| 10.3 | Protected admin dashboard enforces server-side role authorization | **PASS** | Verified in `AdminPage.tsx`, `adminService.ts`, and Migration 7 (`20261027000007_content_library_and_admin.sql`): `403 Forbidden` for non-admin students, `ensureAdmin()` checks `role === 'admin'`, RLS policies restrict table writes to authenticated admins. Local dev sandbox mode clearly disclosed. |
+| 10.4 | Question and article creation/editing validated with citations | **PASS** | Verified in `adminService.ts`, `AdminPage.tsx`, and `ContentLibraryAndAdmin.test.tsx`: Question validation requires category, difficulty, 4 valid options, matching correct option ID, >=15 char explanation, citation, and key takeaway. Article management supports CRUD, published/draft status toggling, and peer-reviewed citations. |
 
 ---
 

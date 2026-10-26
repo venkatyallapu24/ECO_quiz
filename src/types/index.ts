@@ -15,6 +15,16 @@ export interface Category {
   orderIndex: number;
 }
 
+export const CANONICAL_CATEGORIES: Category[] = [
+  { id: 'climate', name: 'Climate & Atmosphere', slug: 'climate', description: 'Atmospheric science, emissions, carbon tracking, and IPCC assessments.', iconName: 'Globe', orderIndex: 1 },
+  { id: 'energy', name: 'Clean Energy & Grid', slug: 'energy', description: 'Renewable energy technology, grid modernization, storage, and LCOE economics.', iconName: 'Zap', orderIndex: 2 },
+  { id: 'waste', name: 'Circular Economy & Waste', slug: 'waste', description: 'Waste reduction, polymer lifecycle analysis, material circularity, and composting.', iconName: 'RotateCcw', orderIndex: 3 },
+  { id: 'biodiversity', name: 'Biodiversity & Habitats', slug: 'biodiversity', description: 'Ecosystem health, conservation biology, IUCN red list, and trophic cascades.', iconName: 'Trees', orderIndex: 4 },
+  { id: 'water', name: 'Water & Ocean Health', slug: 'water', description: 'Hydrology, marine ecosystems, acidification, freshwater preservation, and pollution.', iconName: 'Droplets', orderIndex: 5 },
+  { id: 'food', name: 'Sustainable Food & Soil', slug: 'food', description: 'Regenerative agriculture, soil carbon sequestration, food security, and nutrition.', iconName: 'Sprout', orderIndex: 6 },
+  { id: 'policy', name: 'Environmental Policy', slug: 'policy', description: 'Environmental governance, Paris Agreement, carbon markets, and legal frameworks.', iconName: 'Scale', orderIndex: 7 },
+];
+
 export interface QuestionOption {
   id: string;
   text: string;
@@ -166,4 +176,48 @@ export interface LeaderboardEntry {
   isPublic: boolean;
   createdAt: string;
   department?: string;
+}
+
+export interface Article {
+  id: string;
+  slug: string;
+  title: string;
+  categoryId: string;
+  categoryName: string;
+  readTimeMinutes: number;
+  summary: string;
+  content: string;
+  sourceCitation: string;
+  keyTakeaways: string[];
+  status: 'published' | 'draft' | 'archived';
+  isVerifiedSource: boolean;
+  createdAt: string;
+}
+
+export interface AdminQuestion {
+  id: string;
+  categoryId: string;
+  difficulty: Difficulty;
+  questionText: string;
+  options: QuestionOption[];
+  correctOptionId: string;
+  explanation: string;
+  sourceCitation: string;
+  keyTakeaway: string;
+  status: 'published' | 'draft' | 'archived';
+  createdAt?: string;
+}
+
+export interface QuizAttemptHistoryItem {
+  id: string;
+  attemptId?: string;
+  categoryId: string;
+  categoryName: string;
+  mode: QuizMode;
+  difficulty: Difficulty;
+  score: number;
+  totalQuestions: number;
+  accuracyPercent: number;
+  xpAwarded: number;
+  completedAt: string;
 }

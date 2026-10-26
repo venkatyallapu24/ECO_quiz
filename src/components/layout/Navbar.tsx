@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Leaf, Award, BookOpen, Trophy, LayoutDashboard, Menu, X, PlayCircle } from 'lucide-react';
+import { Leaf, Award, BookOpen, Trophy, LayoutDashboard, Menu, X, PlayCircle, Shield } from 'lucide-react';
 import { useAuth } from '@/providers/AppProviders';
 import { LevelBadge } from '@/components/ui/LevelBadge';
 import { StreakIndicator } from '@/components/ui/StreakIndicator';
@@ -20,6 +20,7 @@ export const Navbar: React.FC = () => {
     { name: 'Library', path: '/library', icon: BookOpen },
     { name: 'Challenges', path: '/challenges', icon: Award },
     { name: 'Leaderboard', path: '/leaderboard', icon: Trophy },
+    ...(user?.role === 'admin' ? [{ name: 'Admin', path: '/admin', icon: Shield }] : []),
   ];
 
   const isActive = (path: string) => location.pathname === path;
