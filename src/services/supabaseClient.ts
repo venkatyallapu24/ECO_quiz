@@ -195,7 +195,7 @@ export class SupabaseQuizRpcService {
   }
 
   /**
-   * Fetches public leaderboard entries from Supabase PostgreSQL
+   * Fetches public leaderboard entries from Supabase PostgreSQL using trusted RPC
    */
   public async getLeaderboard(
     _period: RankingPeriod = 'weekly'
@@ -207,7 +207,28 @@ export class SupabaseQuizRpcService {
       };
     }
 
-    // Queries public profiles with progression data
+    // Attempt hardened RPC first
+    const { data: rpcData, error: rpcError } = await supabase.rpc('get_leaderboard', {
+      p_limit: 100,
+    });
+
+    if (!rpcError && Array.isArray(rpcData)) {
+      const entries: LeaderboardEntry[] = rpcData.map((row: any, idx: number) => ({
+        rank: idx + 1,
+        userId: row.id,
+        displayName: row.display_name,
+        avatarUrl: row.avatar_url,
+        level: row.level ?? 1,
+        xp: row.xp ?? 0,
+        streak: row.current_streak ?? 0,
+        isCurrentUser: false,
+        isPublic: true,
+        createdAt: row.created_at,
+      }));
+      return { entries };
+    }
+
+    // Fallback query on profiles if RPC is not yet deployed
     const { data, error } = await supabase
       .from('profiles')
       .select(`
@@ -242,6 +263,55 @@ export class SupabaseQuizRpcService {
     }));
 
     return { entries };
+  }
+
+  /**
+   * Calls PostgreSQL SECURITY DEFINER RPC public.join_challenge
+   */
+  public async joinChallenge(challengeId: string): Promise<{ success: boolean; error?: string }> {
+    if (!supabase) {
+      return {
+        success: false,
+        error: 'Backend unconfigured: live challenge join requires Supabase credentials.',
+      };
+    }
+
+    const { data, error } = await supabase.rpc('join_challenge', {
+      p_challenge_id: challengeId,
+    });
+
+    if (error) {
+      return { success: false, error: error.message };
+    }
+
+    return { success: data?.success ?? true };
+  }
+
+  /**
+   * Calls PostgreSQL SECURITY DEFINER RPC public.claim_challenge_reward
+   */
+  public async claimChallengeReward(
+    challengeId: string
+  ): Promise<{ success: boolean; xpAwarded?: number; error?: string }> {
+    if (!supabase) {
+      return {
+        success: false,
+        error: 'Backend unconfigured: claiming challenge rewards requires Supabase credentials.',
+      };
+    }
+
+    const { data, error } = await supabase.rpc('claim_challenge_reward', {
+      p_challenge_id: challengeId,
+    });
+
+    if (error) {
+      return { success: false, error: error.message };
+    }
+
+    return {
+      success: data?.success ?? true,
+      xpAwarded: data?.xpAwarded,
+    };
   }
 }
 

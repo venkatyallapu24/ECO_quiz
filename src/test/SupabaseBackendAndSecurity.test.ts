@@ -189,5 +189,77 @@ describe('Stage 9 — Supabase Authentication, Database & Trusted Operations Ver
       expect(res.error).toMatch(/Supabase backend not configured/);
       expect(res.user).toBeNull();
     });
+
+    it('gracefully handles joinChallenge, claimChallengeReward, and getLeaderboard when unconfigured', async () => {
+      const joinRes = await supabaseQuizRpcService.joinChallenge('ch-communal-1');
+      expect(joinRes.success).toBe(false);
+      expect(joinRes.error).toMatch(/Backend unconfigured/);
+
+      const claimRes = await supabaseQuizRpcService.claimChallengeReward('ch-communal-1');
+      expect(claimRes.success).toBe(false);
+      expect(claimRes.error).toMatch(/Backend unconfigured/);
+
+      const lbRes = await supabaseQuizRpcService.getLeaderboard('weekly');
+      expect(lbRes.entries).toHaveLength(0);
+      expect(lbRes.error).toMatch(/Backend unconfigured/);
+    });
+  });
+
+  describe('9.6 Stage 9.1 Security Audit & Hardening Verification (Migration 6)', () => {
+    const hardeningSql = fs.readFileSync(
+      path.join(migrationsDir, '20261027000006_security_hardening.sql'),
+      'utf8'
+    );
+
+    it('verifies automatic profile & progression provisioning trigger on auth.users signup', () => {
+      expect(hardeningSql).toMatch(/CREATE OR REPLACE FUNCTION public\.handle_new_user\(\)/);
+      expect(hardeningSql).toMatch(/AFTER INSERT ON auth\.users/);
+      // Hardened against client role injection
+      expect(hardeningSql).toMatch(/'user' -- CRITICAL: Force 'user' role regardless of client-supplied metadata/);
+      expect(hardeningSql).toMatch(/INSERT INTO public\.user_progression/);
+    });
+
+    it('verifies tamper-proof profile role protection trigger', () => {
+      expect(hardeningSql).toMatch(/CREATE OR REPLACE FUNCTION public\.protect_profile_fields\(\)/);
+      expect(hardeningSql).toMatch(/BEFORE UPDATE ON public\.profiles/);
+      expect(hardeningSql).toMatch(/Unauthorized: Only administrators can modify user roles/);
+    });
+
+    it('verifies trusted get_leaderboard RPC enforces approved public projection and privacy filtering', () => {
+      expect(hardeningSql).toMatch(/CREATE OR REPLACE FUNCTION public\.get_leaderboard/);
+      expect(hardeningSql).toMatch(/WHERE p\.is_public_leaderboard = true/);
+      // Deterministic 4-tier tie-breaking in SQL engine
+      expect(hardeningSql).toMatch(/ORDER BY\s+up\.xp DESC,\s+up\.current_streak DESC,\s+p\.created_at ASC,\s+p\.display_name ASC/m);
+      // Excludes private fields: no role, no email, no timezone
+      expect(hardeningSql).not.toMatch(/p\.role/);
+      expect(hardeningSql).not.toMatch(/p\.timezone/);
+    });
+
+    it('verifies trusted join_challenge and claim_challenge_reward RPCs prevent progress and reward tampering', () => {
+      expect(hardeningSql).toMatch(/CREATE OR REPLACE FUNCTION public\.join_challenge/);
+      expect(hardeningSql).toMatch(/CREATE OR REPLACE FUNCTION public\.claim_challenge_reward/);
+      // Atomic locking
+      expect(hardeningSql).toMatch(/WHERE user_id = v_user_id AND challenge_id = p_challenge_id\s+FOR UPDATE/m);
+      expect(hardeningSql).toMatch(/reward_claimed = true/);
+      expect(hardeningSql).toMatch(/'challenge_reward'/);
+    });
+
+    it('verifies least-privilege function execution and table write revocations', () => {
+      // apply_quiz_gamification revoked from client access
+      expect(hardeningSql).toMatch(/REVOKE EXECUTE ON FUNCTION public\.apply_quiz_gamification.*FROM anon/);
+      expect(hardeningSql).toMatch(/REVOKE EXECUTE ON FUNCTION public\.apply_quiz_gamification.*FROM authenticated/);
+
+      // Public default execution revoked
+      expect(hardeningSql).toMatch(/REVOKE ALL ON FUNCTION public\.start_quiz_attempt.*FROM PUBLIC/);
+      expect(hardeningSql).toMatch(/REVOKE ALL ON FUNCTION public\.submit_quiz_attempt.*FROM PUBLIC/);
+      expect(hardeningSql).toMatch(/REVOKE ALL ON FUNCTION public\.join_challenge.*FROM PUBLIC/);
+      expect(hardeningSql).toMatch(/REVOKE ALL ON FUNCTION public\.claim_challenge_reward.*FROM PUBLIC/);
+
+      // Direct client table writes explicitly revoked
+      expect(hardeningSql).toMatch(/REVOKE INSERT, UPDATE, DELETE ON public\.user_progression FROM anon, authenticated;/);
+      expect(hardeningSql).toMatch(/REVOKE INSERT, UPDATE, DELETE ON public\.quiz_attempts FROM anon, authenticated;/);
+      expect(hardeningSql).toMatch(/REVOKE INSERT, UPDATE, DELETE ON public\.xp_ledger FROM anon, authenticated;/);
+      expect(hardeningSql).toMatch(/REVOKE INSERT, UPDATE, DELETE ON public\.user_challenges FROM anon, authenticated;/);
+    });
   });
 });
