@@ -4,9 +4,12 @@ import { Leaf, Award, BookOpen, Trophy, LayoutDashboard, Menu, X, PlayCircle } f
 import { useAuth } from '@/providers/AppProviders';
 import { LevelBadge } from '@/components/ui/LevelBadge';
 import { StreakIndicator } from '@/components/ui/StreakIndicator';
+import { AuthModal } from '@/components/auth/AuthModal';
 
 export const Navbar: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authModalMode, setAuthModalMode] = useState<'login' | 'register'>('login');
   const location = useLocation();
   const { user, progression } = useAuth();
 
@@ -110,18 +113,26 @@ export const Navbar: React.FC = () => {
               </div>
             ) : (
               <div className="flex items-center gap-2">
-                <Link
-                  to="/dashboard"
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAuthModalMode('login');
+                    setAuthModalOpen(true);
+                  }}
                   className="px-3.5 py-1.5 rounded-xl border border-eco-canvas-border text-eco-text font-medium text-xs hover:bg-eco-canvas transition-colors"
                 >
                   Log In
-                </Link>
-                <Link
-                  to="/quiz"
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAuthModalMode('register');
+                    setAuthModalOpen(true);
+                  }}
                   className="px-3.5 py-1.5 rounded-xl bg-eco-forest text-white font-medium text-xs hover:bg-eco-forest-hover transition-colors shadow-eco-sm"
                 >
                   Sign Up
-                </Link>
+                </button>
               </div>
             )}
           </div>
@@ -190,6 +201,13 @@ export const Navbar: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Student Authentication Modal */}
+      <AuthModal
+        isOpen={authModalOpen}
+        onClose={() => setAuthModalOpen(false)}
+        defaultMode={authModalMode}
+      />
     </nav>
   );
 };

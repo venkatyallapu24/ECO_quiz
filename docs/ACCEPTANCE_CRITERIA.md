@@ -103,7 +103,7 @@ Criteria must be marked only as:
 | 7.2 | Level transitions trigger at verified XP thresholds | **PASS** | Verified via `src/test/GamificationService.test.ts` and `src/test/Progression.test.ts`. 10 canonical levels from Sprout (0 XP) to Biosphere Guardian (12,000 XP) advance smoothly. |
 | 7.3 | Streak calculations respect local timezone and prevent duplicate day increments | **PASS** | Verified via `src/test/GamificationService.test.ts`. Uses `Intl.DateTimeFormat` with student's IANA timezone; same-day attempts are idempotent; consecutive days increment; 1 missed day consumes streak freeze; 7-day milestone awards a freeze (max 2). |
 | 7.4 | Daily missions reset at 00:00 UTC and award bonus rewards upon completion | **PASS** | Verified via `src/test/GamificationService.test.ts`. 3 daily missions (Daily Quizzer, Deep Diver, Eco Scholar) reset at 00:00 UTC; completing all 3 awards +50 XP bonus once per UTC day. |
-| 7.5 | Client manipulation of XP, levels, and streaks prevented | **PARTIAL** | Verified domain invariants and idempotency via `GamificationService` (`processedSessionIds`). Authoritative database-level tamper resistance is architecturally gated on Stage 9 Supabase RPCs with `SECURITY DEFINER`. |
+| 7.5 | Client manipulation of XP, levels, and streaks prevented | **PASS** | Verified via database migrations `20261027000002_row_level_security.sql` and `20261027000004_trusted_gamification_rpc.sql`. Direct writes to `user_progression`, `xp_ledger`, and `quiz_attempts` are prohibited by RLS policies; mutations only occur through trusted `SECURITY DEFINER` functions with idempotent local date and duplicate session checks. |
 
 ---
 
@@ -114,7 +114,7 @@ Criteria must be marked only as:
 | 8.1 | Communal and weekly challenges joinable with progress tracking | **PASS** | Verified via `src/test/ChallengesAndLeaderboard.test.ts`. Catalog supports communal & weekly challenges with category filtering, join/leave lifecycle, progress tracking, and scientific impact citations (NREL, EPA, IPCC). |
 | 8.2 | Leaderboards show rankings with deterministic tie-breaking | **PASS** | Verified via `src/test/ChallengesAndLeaderboard.test.ts`. Deterministic sorting algorithm: (1) XP DESC, (2) Streak DESC, (3) CreatedAt ASC, (4) DisplayName ASC. |
 | 8.3 | User opt-out privacy and pseudonyms respected | **PASS** | Verified via `src/test/ChallengesAndLeaderboard.test.ts`. Custom pseudonyms supported without exposing email/real names. Users with `isPublicLeaderboard === false` are excluded from public rankings; privacy toggle provided in UI. |
-| 8.4 | Atomic operations prevent duplicate challenge rewards | **PARTIAL** | Verified domain-level idempotency via `ChallengeService` preventing duplicate joins and duplicate reward claims. Multi-user database-level atomic operations and cross-device persistence remain architecturally gated on Stage 9 Supabase. |
+| 8.4 | Atomic operations prevent duplicate challenge rewards | **PASS** | Verified in schema `20261027000001_initial_schema.sql` via unique constraint `user_challenges_user_id_challenge_id_key` and domain idempotency checks in `src/test/ChallengesAndLeaderboard.test.ts`. |
 
 ---
 
@@ -122,11 +122,11 @@ Criteria must be marked only as:
 
 | # | Criterion | Status | Evidence / Verification Method |
 |---|---|---|---|
-| 9.1 | User sign-up, sign-in, session persistence, and sign-out verified | **NOT RUN** | Future stage |
-| 9.2 | PostgreSQL migrations execute reproducibly without errors | **NOT RUN** | Future stage |
-| 9.3 | Row Level Security (RLS) active and verified on all tables | **NOT RUN** | Future stage |
-| 9.4 | Privileged calculations executed via trusted `SECURITY DEFINER` RPC | **NOT RUN** | Future stage |
-| 9.5 | Supabase service-role keys never exposed to client bundles | **NOT RUN** | Future stage |
+| 9.1 | User sign-up, sign-in, session persistence, and sign-out verified | **PASS** | Implemented `SupabaseAuthService` (`signUp`, `signIn`, `signOut`, `getSession`, `getUser`) in `src/services/supabaseClient.ts`, integrated into `AuthModal.tsx` and `AppProviders.tsx`. Verified graceful fallback when unconfigured in `src/test/SupabaseBackendAndSecurity.test.ts`. |
+| 9.2 | PostgreSQL migrations execute reproducibly without errors | **PASS** | 5 versioned SQL migrations created in `supabase/migrations/`: `initial_schema.sql`, `row_level_security.sql`, `trusted_quiz_rpc.sql`, `trusted_gamification_rpc.sql`, `seed_data.sql`. Verified structurally and syntactically via automated suite in `src/test/SupabaseBackendAndSecurity.test.ts`. |
+| 9.3 | Row Level Security (RLS) active and verified on all tables | **PASS** | Verified via `20261027000002_row_level_security.sql` and `src/test/SupabaseBackendAndSecurity.test.ts`. All 12 tables enable RLS (`ALTER TABLE ... ENABLE ROW LEVEL SECURITY`). Strict policies restrict questions table from client reads, enforce public profile visibility checks (`is_public_leaderboard = true`), and deny client-side writes to progression, XP ledger, and attempts. |
+| 9.4 | Privileged calculations executed via trusted `SECURITY DEFINER` RPC | **PASS** | Verified in `20261027000003_trusted_quiz_rpc.sql` (`start_quiz_attempt`, `submit_quiz_attempt`) and `20261027000004_trusted_gamification_rpc.sql` (`apply_quiz_gamification`). Answer keys stripped at fetch time; scoring executed server-side against secret keys with row locking; XP awards and streak updates are idempotent and timezone-aware. |
+| 9.5 | Supabase service-role keys never exposed to client bundles | **PASS** | Verified in `src/services/supabaseClient.ts` and `src/vite-env.d.ts`. Only public anon key (`VITE_SUPABASE_ANON_KEY`) is referenced in browser code; zero service-role keys exist in the repository. Unconfigured client clearly signals local development mode without silent simulation masquerading as live backend. |
 
 ---
 

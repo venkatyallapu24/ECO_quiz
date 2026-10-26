@@ -11,6 +11,10 @@ interface AuthContextType {
   unlockedBadges: Badge[];
   challenges: Challenge[];
   isAuthenticated: boolean;
+  isBackendConnected: boolean;
+  signIn: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  signUp: (email: string, password: string, displayName: string, timezone?: string) => Promise<{ success: boolean; error?: string }>;
+  signOut: () => Promise<void>;
   signInMock: () => void;
   signOutMock: () => void;
   recordQuizCompletion: (session: QuizSessionSummary) => GamificationRewardOutcome;
@@ -39,6 +43,10 @@ const AuthContext = createContext<AuthContextType>({
   unlockedBadges: [],
   challenges: [],
   isAuthenticated: false,
+  isBackendConnected: false,
+  signIn: async () => ({ success: false }),
+  signUp: async () => ({ success: false }),
+  signOut: async () => {},
   signInMock: () => {},
   signOutMock: () => {},
   recordQuizCompletion: () => ({} as GamificationRewardOutcome),
@@ -51,10 +59,85 @@ const AuthContext = createContext<AuthContextType>({
 
 export const useAuth = () => useContext(AuthContext);
 
+import { supabaseAuthService } from '@/services/supabaseClient';
+
 export const AppProviders: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<UserProfile | null>(mockProfile);
   const [gamificationState, setGamificationState] = useState<GamificationState>(() => gamificationService.getState());
   const [challenges, setChallenges] = useState<Challenge[]>(() => challengeService.getChallenges());
+
+  const isBackendConnected = supabaseAuthService.isConfigured();
+
+  const signIn = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
+    if (isBackendConnected) {
+      const res = await supabaseAuthService.signIn(email, password);
+      if (res.error) {
+        return { success: false, error: res.error };
+      }
+      if (res.user) {
+        setUser({
+          id: res.user.id,
+          username: res.user.email?.split('@')[0] || 'student',
+          displayName: res.user.user_metadata?.display_name || 'Student Learner',
+          avatarUrl: null,
+          role: 'user',
+          timezone: res.user.user_metadata?.timezone || 'UTC',
+          isPublicLeaderboard: true,
+          createdAt: res.user.created_at,
+        });
+      }
+      return { success: true };
+    } else {
+      // Local development simulation
+      setUser({
+        ...mockProfile,
+        displayName: email.split('@')[0] || 'Campus Learner',
+      });
+      return { success: true };
+    }
+  };
+
+  const signUp = async (
+    email: string,
+    password: string,
+    displayName: string,
+    timezone: string = 'UTC'
+  ): Promise<{ success: boolean; error?: string }> => {
+    if (isBackendConnected) {
+      const res = await supabaseAuthService.signUp(email, password, displayName, timezone);
+      if (res.error) {
+        return { success: false, error: res.error };
+      }
+      if (res.user) {
+        setUser({
+          id: res.user.id,
+          username: email.split('@')[0] || 'student',
+          displayName,
+          avatarUrl: null,
+          role: 'user',
+          timezone,
+          isPublicLeaderboard: true,
+          createdAt: new Date().toISOString(),
+        });
+      }
+      return { success: true };
+    } else {
+      // Local development simulation
+      setUser({
+        ...mockProfile,
+        displayName,
+        timezone,
+      });
+      return { success: true };
+    }
+  };
+
+  const signOut = async (): Promise<void> => {
+    if (isBackendConnected) {
+      await supabaseAuthService.signOut();
+    }
+    setUser(null);
+  };
 
   const signInMock = () => {
     setUser(mockProfile);
@@ -131,6 +214,10 @@ export const AppProviders: React.FC<{ children: ReactNode }> = ({ children }) =>
         unlockedBadges,
         challenges,
         isAuthenticated: !!user,
+        isBackendConnected,
+        signIn,
+        signUp,
+        signOut,
         signInMock,
         signOutMock,
         recordQuizCompletion,
