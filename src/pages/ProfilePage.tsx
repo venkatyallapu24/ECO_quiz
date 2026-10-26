@@ -6,13 +6,7 @@ import { StreakIndicator } from '@/components/ui/StreakIndicator';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 
 export const ProfilePage: React.FC = () => {
-  const { user, progression } = useAuth();
-
-  const badges = [
-    { id: 'b1', name: 'First Sprout', desc: 'Completed first environmental quiz', icon: '🌱', date: 'Oct 2026' },
-    { id: 'b2', name: 'Flamekeeper', desc: 'Maintained a 3-day active streak', icon: '🔥', date: 'Oct 2026' },
-    { id: 'b3', name: 'Climate Scholar', desc: 'Scored 100% on Climate Change quiz', icon: '🌍', date: 'Oct 2026' },
-  ];
+  const { user, progression, unlockedBadges } = useAuth();
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
@@ -44,18 +38,18 @@ export const ProfilePage: React.FC = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Award className="w-5 h-5 text-eco-emerald" />
-            Earned Badges ({badges.length})
+            Earned Badges ({unlockedBadges.length})
           </CardTitle>
         </CardHeader>
 
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {badges.map((badge) => (
+            {unlockedBadges.map((badge) => (
               <div key={badge.id} className="p-4 rounded-xl bg-eco-canvas-subtle/60 border border-eco-canvas-border text-center hover:border-eco-sage transition-colors">
                 <span className="text-3xl block mb-2">{badge.icon}</span>
                 <h3 className="text-sm font-bold text-eco-text">{badge.name}</h3>
                 <p className="text-xs text-eco-text-muted mb-2 leading-relaxed">{badge.desc}</p>
-                <span className="text-[10px] text-eco-text-light font-semibold uppercase">{badge.date}</span>
+                <span className="text-[10px] text-eco-text-light font-semibold uppercase">{badge.unlockedAt ? new Date(badge.unlockedAt).toLocaleDateString() : 'Unlocked'}</span>
               </div>
             ))}
           </div>

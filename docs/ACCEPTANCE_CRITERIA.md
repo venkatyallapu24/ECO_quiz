@@ -97,12 +97,13 @@ Criteria must be marked only as:
 ## Stage 7: Gamification System (`ECO-STAGE-7-GAMIFICATION`)
 
 | # | Criterion | Status | Evidence / Verification Method |
+| # | Criterion | Status | Evidence / Verification Method |
 |---|---|---|---|
-| 7.1 | XP awarded accurately according to approved difficulty matrix | **NOT RUN** | Future stage |
-| 7.2 | Level transitions trigger at verified XP thresholds | **NOT RUN** | Future stage |
-| 7.3 | Streak calculations respect local timezone and prevent duplicate day increments | **NOT RUN** | Future stage |
-| 7.4 | Daily missions reset at 00:00 UTC and award bonus rewards upon completion | **NOT RUN** | Future stage |
-| 7.5 | Client manipulation of XP, levels, and streaks prevented | **NOT RUN** | Future stage |
+| 7.1 | XP awarded accurately according to approved difficulty matrix | **PASS** | Verified via `src/test/GamificationService.test.ts`. Easy (10 XP/q), Medium (20 XP/q), Hard (30 XP/q), Speed bonus (+5 XP timed), Perfect session bonus (+50 XP for 10/10). |
+| 7.2 | Level transitions trigger at verified XP thresholds | **PASS** | Verified via `src/test/GamificationService.test.ts` and `src/test/Progression.test.ts`. 10 canonical levels from Sprout (0 XP) to Biosphere Guardian (12,000 XP) advance smoothly. |
+| 7.3 | Streak calculations respect local timezone and prevent duplicate day increments | **PASS** | Verified via `src/test/GamificationService.test.ts`. Uses `Intl.DateTimeFormat` with student's IANA timezone; same-day attempts are idempotent; consecutive days increment; 1 missed day consumes streak freeze; 7-day milestone awards a freeze (max 2). |
+| 7.4 | Daily missions reset at 00:00 UTC and award bonus rewards upon completion | **PASS** | Verified via `src/test/GamificationService.test.ts`. 3 daily missions (Daily Quizzer, Deep Diver, Eco Scholar) reset at 00:00 UTC; completing all 3 awards +50 XP bonus once per UTC day. |
+| 7.5 | Client manipulation of XP, levels, and streaks prevented | **PARTIAL** | Verified domain invariants and idempotency via `GamificationService` (`processedSessionIds`). Authoritative database-level tamper resistance is architecturally gated on Stage 9 Supabase RPCs with `SECURITY DEFINER`. |
 
 ---
 

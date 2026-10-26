@@ -1,10 +1,18 @@
-import React from 'react';
-import { Clock, ExternalLink, BookOpen } from 'lucide-react';
+import React, { useState } from 'react';
+import { Clock, ExternalLink, BookOpen, CheckCircle2 } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/Card';
+import { useAuth } from '@/providers/AppProviders';
 
 export const LibraryPage: React.FC = () => {
+  const { recordArticleRead } = useAuth();
+  const [readArticles, setReadArticles] = useState<Set<string>>(new Set());
+
+  const handleReadArticle = (articleId: string) => {
+    recordArticleRead(articleId);
+    setReadArticles((prev) => new Set([...prev, articleId]));
+  };
   const articles = [
     {
       id: 'a1',
@@ -71,12 +79,12 @@ export const LibraryPage: React.FC = () => {
                 {art.citation}
               </span>
               <Button
-                variant="ghost"
+                variant={readArticles.has(art.id) ? "secondary" : "ghost"}
                 size="sm"
-                rightIcon={<ExternalLink className="w-3 h-3 text-eco-emerald" />}
-                onClick={() => alert(`Full article view scheduled for Stage 10.`)}
+                rightIcon={readArticles.has(art.id) ? <CheckCircle2 className="w-3 h-3 text-eco-emerald" /> : <ExternalLink className="w-3 h-3 text-eco-emerald" />}
+                onClick={() => handleReadArticle(art.id)}
               >
-                Read
+                {readArticles.has(art.id) ? 'Completed' : 'Read'}
               </Button>
             </CardFooter>
           </Card>

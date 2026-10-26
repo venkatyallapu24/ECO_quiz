@@ -93,3 +93,36 @@ export interface UserProfile {
   isPublicLeaderboard: boolean;
   createdAt: string;
 }
+
+export interface Badge {
+  id: string;
+  name: string;
+  desc: string;
+  icon: string;
+  category: 'starter' | 'streak' | 'mastery' | 'community';
+  unlockedAt?: string | null;
+}
+
+export interface GamificationRewardOutcome {
+  attemptId?: string;
+  sessionId?: string;
+  isDuplicate: boolean;
+  xpAwarded: number;
+  baseXp: number;
+  speedBonusXp: number;
+  perfectSessionBonusXp: number;
+  missionXpAwarded: number;
+  allClearBonusXp: number;
+  totalXpEarned: number;
+  prevXp: number;
+  newXp: number;
+  prevLevel: number;
+  newLevel: number;
+  didLevelUp: boolean;
+  currentStreak: number;
+  streakIncremented: boolean;
+  freezeConsumed: boolean;
+  freezeAvailable: number;
+  unlockedBadges: Badge[];
+  completedMissions: DailyMission[];
+}

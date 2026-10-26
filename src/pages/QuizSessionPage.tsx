@@ -27,9 +27,12 @@ import { ProgressBar } from '@/components/ui/ProgressBar';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { Alert } from '@/components/ui/Alert';
 import { AnswerOption } from '@/components/quiz/AnswerOption';
+import { useAuth } from '@/providers/AppProviders';
+import { GamificationRewardOutcome } from '@/types';
 
 export const QuizSessionPage: React.FC = () => {
   const [searchParams] = useSearchParams();
+  const { recordQuizCompletion } = useAuth();
 
   const categoryParam = searchParams.get('category') || 'climate';
   const modeParam = (searchParams.get('mode') as QuizMode) || 'practice';
@@ -51,6 +54,7 @@ export const QuizSessionPage: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionError, setSubmissionError] = useState<string | null>(null);
   const [resultsSummary, setResultsSummary] = useState<QuizSessionSummary | null>(null);
+  const [rewardOutcome, setRewardOutcome] = useState<GamificationRewardOutcome | null>(null);
   const [sessionStartTime, setSessionStartTime] = useState<number>(Date.now());
 
   // Practice mode explanation peek
@@ -151,6 +155,8 @@ export const QuizSessionPage: React.FC = () => {
         timeSpentSeconds: totalTimeSpent,
         perQuestionTimes: perQuestionSeconds,
       });
+      const outcome = recordQuizCompletion(summary);
+      setRewardOutcome(outcome);
       setResultsSummary(summary);
     } catch (err: unknown) {
       setSubmissionError(
@@ -161,7 +167,7 @@ export const QuizSessionPage: React.FC = () => {
     } finally {
       setIsSubmitting(false);
     }
-  }, [session, isSubmitting, resultsSummary, selectedAnswers, sessionStartTime, perQuestionSeconds]);
+  }, [session, isSubmitting, resultsSummary, selectedAnswers, sessionStartTime, perQuestionSeconds, recordQuizCompletion]);
 
   // Keyboard Navigation: keys 1-4 / A-D to choose options, Enter / right-arrow to advance
   useEffect(() => {
@@ -306,6 +312,57 @@ export const QuizSessionPage: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Gamification Reward & Unlock Celebrations (Non-blocking, respects reduced motion) */}
+        {rewardOutcome && (
+          <div className="space-y-3">
+            {rewardOutcome.didLevelUp && (
+              <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 flex items-center justify-between gap-3 shadow-eco-sm">
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">🎉</span>
+                  <div>
+                    <div className="font-bold text-sm">Level Up Achieved!</div>
+                    <div className="text-xs text-amber-800">
+                      Congratulations! You advanced from Level {rewardOutcome.prevLevel} to Level {rewardOutcome.newLevel}!
+                    </div>
+                  </div>
+                </div>
+                <span className="text-xs font-bold uppercase tracking-wider bg-amber-200/80 px-2.5 py-1 rounded-lg">
+                  New Tier
+                </span>
+              </div>
+            )}
+
+            {rewardOutcome.freezeConsumed && (
+              <div className="p-3.5 rounded-2xl bg-sky-50 border border-sky-200 text-sky-900 text-xs flex items-center gap-2">
+                <span className="text-lg">🛡️</span>
+                <span>
+                  <strong>Streak Freeze Consumed:</strong> Your active streak was preserved after missing a study day. ({rewardOutcome.freezeAvailable} freeze remaining)
+                </span>
+              </div>
+            )}
+
+            {rewardOutcome.unlockedBadges.length > 0 && (
+              <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-950 space-y-2">
+                <div className="font-bold text-xs uppercase tracking-wider text-eco-forest flex items-center gap-1.5">
+                  <Award className="w-4 h-4 text-eco-emerald" />
+                  Newly Unlocked Badge{rewardOutcome.unlockedBadges.length > 1 ? 's' : ''}!
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {rewardOutcome.unlockedBadges.map((badge) => (
+                    <div key={badge.id} className="p-2.5 rounded-xl bg-white border border-emerald-100 flex items-center gap-3 shadow-eco-sm">
+                      <span className="text-2xl">{badge.icon}</span>
+                      <div>
+                        <div className="text-xs font-bold text-eco-text">{badge.name}</div>
+                        <div className="text-[11px] text-eco-text-muted">{badge.desc}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Action Buttons Row */}
         <div className="flex flex-wrap items-center justify-between gap-3">

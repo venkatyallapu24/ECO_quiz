@@ -84,7 +84,7 @@ const DEMO_RECENT_ATTEMPTS: RecentAttemptDisplay[] = [
 ];
 
 export const DashboardPage: React.FC = () => {
-  const { user, progression } = useAuth();
+  const { user, progression, dailyMissions: authDailyMissions } = useAuth();
 
   // State to toggle between active student fixture and clean first-time state
   const [isFirstTimeUser, setIsFirstTimeUser] = useState(false);
@@ -100,6 +100,8 @@ export const DashboardPage: React.FC = () => {
 
   const dailyMissions = isFirstTimeUser
     ? CANONICAL_DAILY_MISSIONS.map((m) => ({ ...m, currentCount: 0, isCompleted: false }))
+    : authDailyMissions.length > 0
+    ? authDailyMissions
     : CANONICAL_DAILY_MISSIONS;
 
   const completedMissionsCount = dailyMissions.filter((m) => m.isCompleted).length;
