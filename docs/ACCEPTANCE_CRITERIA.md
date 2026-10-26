@@ -33,7 +33,7 @@ Criteria must be marked only as:
 | 1.3 | 10 ecological levels, XP calculations, and streaks verified | **PASS** | Formulas, streak rules, timezone handling, 00:00 UTC missions in Section 3.3 |
 | 1.4 | Security requirements (answer secrecy, server-side scoring) aligned | **PASS** | Answer confidentiality invariant and server RPC flow detailed in Section 3.2 & `TECHNICAL_DECISIONS.md` |
 | 1.5 | Requirements traceability matrix mapped to implementation stages | **PASS** | REQ-01 through REQ-13 mapped to Stages 2–14 in Section 4 |
-| 1.6 | Formal stakeholder approval recorded | **PENDING** | Review report produced; awaiting user authorization to advance to Stage 2 |
+| 1.6 | Formal stakeholder approval recorded | **PASS** | User authorized baseline commit and Stage 2 execution (`ECO-BASELINE-AND-STAGE2`) |
 
 ---
 
@@ -41,11 +41,11 @@ Criteria must be marked only as:
 
 | # | Criterion | Status | Evidence / Verification Method |
 |---|---|---|---|
-| 2.1 | Application foundation initialized with React, Vite, TypeScript | **NOT RUN** | Future stage |
-| 2.2 | TypeScript compilation and ESLint pass cleanly | **NOT RUN** | Future stage |
-| 2.3 | Reusable error boundary, folder structure, and routes established | **NOT RUN** | Future stage |
-| 2.4 | Automated tests configured and passing (Vitest / RTL) | **NOT RUN** | Future stage |
-| 2.5 | Production build succeeds (`npm run build`) | **NOT RUN** | Future stage |
+| 2.1 | Application foundation initialized with React, Vite, TypeScript | **PASS** | React 18, Vite 5, Tailwind 3, React Router 6 initialized in `package.json` |
+| 2.2 | TypeScript compilation passes cleanly (`tsc --noEmit`) | **PASS** | `npm run typecheck` returned exit code 0 |
+| 2.3 | Reusable error boundary, folder structure, and routes established | **PASS** | `ErrorBoundary.tsx`, `AppProviders.tsx`, `Navbar.tsx`, and 7 page routes configured |
+| 2.4 | Automated tests configured and passing (Vitest / RTL) | **PASS** | `npm run test` executed 3 tests in `src/test/App.test.tsx`, all passed (exit code 0) |
+| 2.5 | Production build succeeds (`npm run build`) | **PASS** | `npm run build` output bundle in `dist/` in 703ms (exit code 0) |
 
 ---
 
