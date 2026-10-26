@@ -37,6 +37,7 @@
   8. `5b7be1d` ("docs: record commit 01b74d3 in PROJECT_STATUS.md")
   9. `e340c78` ("feat(challenges,leaderboard): implement Stage 8 communal challenges and deterministic leaderboards")
   10. `5f6a814` ("docs: record commit e340c78 in PROJECT_STATUS.md")
+  11. `1bdfb07` ("feat(supabase): implement Stage 9 SQL migrations, RLS policies, trusted RPCs, and auth client")
 - **Current Branch**: `main`
 - **Configured Remote**: None configured locally. Remote target identified as `https://github.com/venkatyallapu24/ECO_quiz.git` (HTTP 200 reachable), pending authorization to attach.
 
