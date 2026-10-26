@@ -126,3 +126,44 @@ export interface GamificationRewardOutcome {
   unlockedBadges: Badge[];
   completedMissions: DailyMission[];
 }
+
+export type ChallengeType = 'communal' | 'weekly';
+export type ChallengeStatus = 'upcoming' | 'active' | 'completed' | 'expired';
+export type RankingPeriod = 'weekly' | 'all-time';
+
+export interface Challenge {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  categoryName: string;
+  type: ChallengeType;
+  startDate: string;
+  endDate: string;
+  targetGoal: number;
+  currentProgress: number;
+  unit: string;
+  impactDescription: string;
+  impactSource: string;
+  xpReward: number;
+  badgeRewardId?: string;
+  isJoined: boolean;
+  isCompleted: boolean;
+  rewardClaimed: boolean;
+  joinedAt: string | null;
+  completedAt: string | null;
+}
+
+export interface LeaderboardEntry {
+  rank: number;
+  userId: string;
+  displayName: string;
+  avatarUrl: string | null;
+  level: number;
+  xp: number;
+  streak: number;
+  isCurrentUser: boolean;
+  isPublic: boolean;
+  createdAt: string;
+  department?: string;
+}

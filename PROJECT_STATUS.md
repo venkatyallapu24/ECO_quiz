@@ -1,11 +1,10 @@
 # EcoQuest — Project Status
-
 ## 1. Current Stage
 
-**Stage 7 — Gamification Engine (Completed, Awaiting Review)**
-- Current Task ID: `ECOQUEST-STAGE-7` (`ECO-STAGE-7-GAMIFICATION`)
-- Status: Stage 7 Gamification Engine fully implemented. Canonical XP calculation matrix (Easy: 10, Medium: 20, Hard: 30 XP per correct question) + Speed bonus (+5 XP in Timed mode) + Perfect session bonus (+50 XP for 10/10). Canonical 10 ecological levels with level-up detection and progress formulas. Strict award idempotency via `processedSessionIds` Set preventing duplicate reward claims for replayed quiz attempts. 3 daily student missions (Daily Quizzer, Deep Diver, Eco Scholar) with 00:00 UTC boundary calculation and +50 XP all-clear bonus awarded once per UTC day. Timezone-aware streak tracking utilizing `Intl.DateTimeFormat` with IANA timezones (handling same-day idempotency, consecutive days, missed days, streak freeze deductions, and milestone freeze awards). 10 canonical badges (First Sprout, Flamekeeper, Week Warrior, Climate Scholar, Energy Pioneer, Zero Waste Hero, Deep Diver, Eco Scholar, All-Clear Master, Biosphere Guardian) with duplicate unlock prevention. Accessible celebratory feedback with support for `prefers-reduced-motion`.
-- Progress: All 63 automated tests passing across 8 test suites (`GamificationService.test.ts`, `QuizService.test.ts`, `QuizSessionPage.test.tsx`, `DashboardPage.test.tsx`, `LandingPage.test.tsx`, `Progression.test.ts`, `DesignSystem.test.tsx`, `App.test.tsx`), TypeScript check clean (`tsc --noEmit`, 0 errors), production build verified (828ms). Awaiting independent review before Stage 8: Challenges and Leaderboards.
+**Stage 8 — Challenges and Leaderboards (Completed, Awaiting Review)**
+- Current Task ID: `ECOQUEST-STAGE-8` (`ECO-STAGE-8-CHALLENGES`)
+- Status: Stage 8 Challenges and Leaderboards fully implemented. Challenge catalog supports campus communal and weekly sprint challenges with category filtering, start/end dates, measurable targets, join/leave lifecycle, and peer-reviewed environmental impact citations (NREL, EPA, IPCC). Domain guards prevent duplicate joins and duplicate reward claims. Deterministic leaderboard engine implements 4-tier tie-breaking: (1) XP DESC, (2) streak DESC, (3) createdAt ASC, (4) displayName ASC. Student privacy controls enable opt-in/opt-out toggling (`is_public_leaderboard`), ensuring opted-out students are cleanly omitted from public rankings. Honest simulation disclosures clearly separate current development fixtures from upcoming Stage 9 PostgreSQL persistence and Row Level Security.
+- Progress: All 76 automated tests passing across 9 test suites (`ChallengesAndLeaderboard.test.ts`, `GamificationService.test.ts`, `QuizService.test.ts`, `QuizSessionPage.test.tsx`, `DashboardPage.test.tsx`, `LandingPage.test.tsx`, `Progression.test.ts`, `DesignSystem.test.tsx`, `App.test.tsx`), TypeScript check clean (`tsc --noEmit`, 0 errors), production build verified (806ms). Awaiting independent review before Stage 9: Supabase Authentication and Database.
 
 ---
 
@@ -35,6 +34,7 @@
   5. `9b34dd5` ("feat(dashboard): implement Stage 5 student progress hub and canonical progression calculations")
   6. `eeb0868` ("feat(quiz,ui): implement Stage 6 environmental quiz engine and campus UI visual alignment")
   7. `01b74d3` ("feat(gamification): implement Stage 7 gamification engine, XP matrix, timezone streaks, and badges")
+  8. `5b7be1d` ("docs: record commit 01b74d3 in PROJECT_STATUS.md")
 - **Current Branch**: `main`
 - **Configured Remote**: None configured locally. Remote target identified as `https://github.com/venkatyallapu24/ECO_quiz.git` (HTTP 200 reachable), pending authorization to attach.
 
@@ -45,12 +45,12 @@
 All required project documentation files are established and tracked:
 
 1. `AGENTS.md` (Role, operational workflow, stage gates, security constraints) — **COMMITTED**
-2. `PROJECT_STATUS.md` (Current project status, toolchain state, acceptance tracking) — **UPDATED (Stage 6 Completed)**
+2. `PROJECT_STATUS.md` (Current project status, toolchain state, acceptance tracking) — **UPDATED (Stage 8 Completed)**
 3. `docs/EcoQuest_Master_Prompts_and_Workflow.md` (Master prompt pack and stage definitions) — **COMMITTED**
 4. `docs/PRODUCT_SPEC.md` (Product specification, quiz engine, 10 levels, streaks, missions, challenges) — **COMMITTED**
 5. `docs/TECHNICAL_DECISIONS.md` (Architecture, React/Vite/Tailwind/Supabase stack, RLS, RPC) — **COMMITTED**
 6. `docs/AGENT_HANDOFF.md` (Agent handoff protocol, report format, ChatGPT review gates) — **COMMITTED**
-7. `docs/ACCEPTANCE_CRITERIA.md` (Stage-by-stage acceptance criteria register) — **UPDATED (Stage 6 PASS)**
+7. `docs/ACCEPTANCE_CRITERIA.md` (Stage-by-stage acceptance criteria register) — **UPDATED (Stage 8 PASS)**
 8. `docs/DEPLOYMENT_RUNBOOK.md` (Hosting architecture, env vars, rollback plan, verification checklist) — **COMMITTED**
 9. `docs/KNOWN_ISSUES.md` (Verified issue register with resolved and active items) — **COMMITTED**
 
@@ -77,11 +77,13 @@ All required project documentation files are established and tracked:
   - `DashboardPage`: Student progress hub with level progression, daily missions, streak tracker, and recent attempts.
   - `QuizLauncherPage`: Domain launcher with category filtering, difficulty selection (Easy, Medium, Hard), and mode selection (Practice vs Timed).
   - `QuizSessionPage`: Full 10-question evaluation journey with 25s timer (+15s grace), question dots navigator, keyboard shortcuts, recoverable error handling, and comprehensive scientific results screen.
-  - `LibraryPage`, `LeaderboardPage`, `ProfilePage`: Scaffolding in place for upcoming stages.
+  - `ChallengesPage`: Communal and weekly environmental challenge catalog with category filtering, measurable progress metrics, join/leave lifecycle, and scientific citations.
+  - `LeaderboardPage`: Deterministic global and weekly student standings with 4-tier tie-breaking, pseudonym masking, and student privacy opt-in/opt-out controls.
+  - `LibraryPage`, `ProfilePage`: Scaffolding in place for upcoming stages.
 - **Development & Build Verification**:
   - `npm run typecheck`: 0 TypeScript errors.
-  - `npm run test`: 63 automated tests passing across 8 test suites.
-  - `npm run build`: Production bundle generated in `dist/` in 828ms (36.19 kB CSS, 306.06 kB JS).
+  - `npm run test`: 76 automated tests passing across 9 test suites.
+  - `npm run build`: Production bundle generated in `dist/` in 806ms (37.65 kB CSS, 325.63 kB JS).
 
 ---
 
@@ -90,15 +92,15 @@ All required project documentation files are established and tracked:
 | Command | Exit Code | Verified Result |
 |---|---|---|
 | `npm run typecheck` | 0 | Clean TypeScript check (`tsc --noEmit`) with 0 errors |
-| `npm run test` | 0 | 63 Vitest tests passed across 8 test suites |
-| `npm run build` | 0 | Production build generated in `dist/` (36.19 kB CSS, 306.06 kB JS in 828ms) |
+| `npm run test` | 0 | 76 Vitest tests passed across 9 test suites |
+| `npm run build` | 0 | Production build generated in `dist/` (37.65 kB CSS, 325.63 kB JS in 806ms) |
 
 ---
 
 ## 7. Outstanding Decisions and Next Action
 
 - **Outstanding Approvals**:
-  1. Formal sign-off on Stage 7: Gamification Engine (`ECOQUEST-STAGE-7`).
-  2. Authorize staging and committing Stage 7 files locally on `main`.
+  1. Formal sign-off on Stage 8: Challenges and Leaderboards (`ECOQUEST-STAGE-8`).
+  2. Authorize staging and committing Stage 8 files locally on `main`.
   3. Authorize configuring Git remote `origin` to `https://github.com/venkatyallapu24/ECO_quiz.git` when appropriate.
-- **Next Eligible Prompt**: Prompt 11 — Stage 8: Challenges and Leaderboards (`ECO-STAGE-8-CHALLENGES`) to implement communal sustainability challenges, weekly campus competitions, and deterministic leaderboards with user privacy toggles.
+- **Next Eligible Prompt**: Prompt 12 — Stage 9: Supabase Authentication and Database (`ECO-STAGE-9-SUPABASE`) to integrate Supabase Auth, PostgreSQL migrations, RLS policies, and server-side RPC scoring functions.th user privacy toggles.

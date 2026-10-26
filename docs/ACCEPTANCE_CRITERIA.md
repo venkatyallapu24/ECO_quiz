@@ -111,10 +111,10 @@ Criteria must be marked only as:
 
 | # | Criterion | Status | Evidence / Verification Method |
 |---|---|---|---|
-| 8.1 | Communal and weekly challenges joinable with progress tracking | **NOT RUN** | Future stage |
-| 8.2 | Leaderboards show rankings with deterministic tie-breaking | **NOT RUN** | Future stage |
-| 8.3 | User opt-out privacy and pseudonyms respected | **NOT RUN** | Future stage |
-| 8.4 | Atomic operations prevent duplicate challenge rewards | **NOT RUN** | Future stage |
+| 8.1 | Communal and weekly challenges joinable with progress tracking | **PASS** | Verified via `src/test/ChallengesAndLeaderboard.test.ts`. Catalog supports communal & weekly challenges with category filtering, join/leave lifecycle, progress tracking, and scientific impact citations (NREL, EPA, IPCC). |
+| 8.2 | Leaderboards show rankings with deterministic tie-breaking | **PASS** | Verified via `src/test/ChallengesAndLeaderboard.test.ts`. Deterministic sorting algorithm: (1) XP DESC, (2) Streak DESC, (3) CreatedAt ASC, (4) DisplayName ASC. |
+| 8.3 | User opt-out privacy and pseudonyms respected | **PASS** | Verified via `src/test/ChallengesAndLeaderboard.test.ts`. Custom pseudonyms supported without exposing email/real names. Users with `isPublicLeaderboard === false` are excluded from public rankings; privacy toggle provided in UI. |
+| 8.4 | Atomic operations prevent duplicate challenge rewards | **PARTIAL** | Verified domain-level idempotency via `ChallengeService` preventing duplicate joins and duplicate reward claims. Multi-user database-level atomic operations and cross-device persistence remain architecturally gated on Stage 9 Supabase. |
 
 ---
 

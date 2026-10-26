@@ -9,6 +9,7 @@ import { DashboardPage } from '@/pages/DashboardPage';
 import { QuizLauncherPage } from '@/pages/QuizLauncherPage';
 import { QuizSessionPage } from '@/pages/QuizSessionPage';
 import { LibraryPage } from '@/pages/LibraryPage';
+import { ChallengesPage } from '@/pages/ChallengesPage';
 import { LeaderboardPage } from '@/pages/LeaderboardPage';
 import { ProfilePage } from '@/pages/ProfilePage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
@@ -23,13 +24,13 @@ export const App: React.FC = () => {
               {/* Public Routes */}
               <Route path="/" element={<LandingPage />} />
               <Route path="/library" element={<LibraryPage />} />
+              <Route path="/challenges" element={<ChallengesPage />} />
               <Route path="/leaderboard" element={<LeaderboardPage />} />
 
               {/* Core Learning & Gamification Routes */}
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/quiz" element={<QuizLauncherPage />} />
               <Route path="/quiz/play" element={<QuizSessionPage />} />
-              <Route path="/challenges" element={<DashboardPage />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/settings" element={<ProfilePage />} />
 
