@@ -103,8 +103,22 @@ CREATE TRIGGER trg_protect_profile_fields
   EXECUTE FUNCTION public.protect_profile_fields();
 
 --------------------------------------------------------------------------------
--- 3. Public Leaderboard View & RPC (Explicit Field Allow-list & Privacy Filtering)
+-- 3. Public Leaderboard RPC (Explicit Field Allow-list & Privacy Filtering)
 --------------------------------------------------------------------------------
+-- Revoke direct cross-user queries on profiles and user_progression.
+-- Leaderboard data MUST ONLY be accessed through the trusted get_leaderboard() RPC.
+DROP POLICY IF EXISTS "Public profiles are visible to all authenticated users" ON public.profiles;
+DROP POLICY IF EXISTS "Public progression readable for opted-in profiles" ON public.user_progression;
+
+-- Ensure users can only view their own profile directly, admins can view all
+CREATE POLICY "Admins can view all profiles"
+  ON public.profiles
+  FOR SELECT
+  TO authenticated
+  USING (
+    EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin')
+  );
+
 CREATE OR REPLACE FUNCTION public.get_leaderboard(p_limit INTEGER DEFAULT 50)
 RETURNS TABLE (
   id UUID,
@@ -137,22 +151,9 @@ BEGIN
     up.current_streak DESC,
     p.created_at ASC,
     p.display_name ASC
-  LIMIT LEAST(GREATEST(p_limit, 1), 100);
+  LIMIT LEAST(GREATEST(COALESCE(p_limit, 50), 1), 100);
 END;
 $$;
-
--- Allow reading public progression for opted-in leaderboard profiles
-CREATE POLICY "Public progression readable for opted-in profiles"
-  ON public.user_progression
-  FOR SELECT
-  TO authenticated, anon
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles p
-      WHERE p.id = user_progression.user_id
-        AND p.is_public_leaderboard = true
-    )
-  );
 
 --------------------------------------------------------------------------------
 -- 4. Trusted Challenge Participation RPCs (Prevent Client Progress & Reward Tampering)
@@ -179,6 +180,10 @@ BEGIN
 
   IF NOT FOUND THEN
     RAISE EXCEPTION 'Challenge % not found.', p_challenge_id;
+  END IF;
+
+  IF NOW() < v_challenge.start_date THEN
+    RAISE EXCEPTION 'Challenge % has not started yet.', p_challenge_id;
   END IF;
 
   IF NOW() > v_challenge.end_date THEN
@@ -251,8 +256,13 @@ BEGIN
   FROM public.challenges
   WHERE id = p_challenge_id;
 
-  IF NOT v_user_ch.is_completed AND v_user_ch.current_progress < v_challenge.target_goal THEN
-    RAISE EXCEPTION 'Challenge % is not completed yet (progress % / %).',
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Challenge % not found.', p_challenge_id;
+  END IF;
+
+  -- Authoritatively evaluate progress against challenge target goal from database
+  IF v_user_ch.current_progress < v_challenge.target_goal THEN
+    RAISE EXCEPTION 'Challenge % is not completed yet (current progress % is below target goal %).',
       p_challenge_id, v_user_ch.current_progress, v_challenge.target_goal;
   END IF;
 

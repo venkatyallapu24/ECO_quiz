@@ -262,4 +262,60 @@ describe('Stage 9 — Supabase Authentication, Database & Trusted Operations Ver
       expect(hardeningSql).toMatch(/REVOKE INSERT, UPDATE, DELETE ON public\.user_challenges FROM anon, authenticated;/);
     });
   });
+
+  describe('9.7 Stage 9.2 Database Consistency, Privacy & Challenge Integrity Verification', () => {
+    const initialSql = fs.readFileSync(
+      path.join(migrationsDir, '20261027000001_initial_schema.sql'),
+      'utf8'
+    );
+    const hardeningSql = fs.readFileSync(
+      path.join(migrationsDir, '20261027000006_security_hardening.sql'),
+      'utf8'
+    );
+
+    it('confirms profiles.role check constraint and handle_new_user default satisfy canonical role model', () => {
+      // Allowed roles in DB constraint are 'user' and 'admin'
+      expect(initialSql).toMatch(/role TEXT NOT NULL DEFAULT 'user' CHECK \(role IN \('user', 'admin'\)\)/);
+      // Provisioning function explicitly supplies canonical 'user' role
+      expect(hardeningSql).toMatch(/'user' -- CRITICAL: Force 'user' role regardless of client-supplied metadata/);
+    });
+
+    it('confirms direct cross-user queries on profiles and user_progression are revoked', () => {
+      // Permissive direct table policies are explicitly dropped
+      expect(hardeningSql).toMatch(/DROP POLICY IF EXISTS "Public profiles are visible to all authenticated users" ON public\.profiles;/);
+      expect(hardeningSql).toMatch(/DROP POLICY IF EXISTS "Public progression readable for opted-in profiles" ON public\.user_progression;/);
+      // Only admins can view other profiles
+      expect(hardeningSql).toMatch(/CREATE POLICY "Admins can view all profiles"/);
+    });
+
+    it('confirms get_leaderboard RPC enforces safe search_path, bounded limit, and excludes private fields', () => {
+      const getLeaderboardStart = hardeningSql.indexOf('CREATE OR REPLACE FUNCTION public.get_leaderboard');
+      const getLeaderboardEnd = hardeningSql.indexOf('END;\n$$;', getLeaderboardStart);
+      const getLeaderboardSql = hardeningSql.substring(getLeaderboardStart, getLeaderboardEnd);
+
+      expect(getLeaderboardSql).toMatch(/SET search_path = public, pg_temp/);
+      expect(getLeaderboardSql).toMatch(/LIMIT LEAST\(GREATEST\(COALESCE\(p_limit, 50\), 1\), 100\);/);
+      // Confirms private fields are absent from returned projection
+      expect(getLeaderboardSql).not.toMatch(/freeze_available/);
+      expect(getLeaderboardSql).not.toMatch(/last_active_date/);
+      expect(getLeaderboardSql).not.toMatch(/longest_streak/);
+      expect(getLeaderboardSql).not.toMatch(/p\.role/);
+      expect(getLeaderboardSql).not.toMatch(/p\.timezone/);
+    });
+
+    it('confirms join_challenge enforces start_date and end_date bounds', () => {
+      expect(hardeningSql).toMatch(/IF NOW\(\) < v_challenge\.start_date THEN/);
+      expect(hardeningSql).toMatch(/Challenge % has not started yet/);
+      expect(hardeningSql).toMatch(/IF NOW\(\) > v_challenge\.end_date THEN/);
+      expect(hardeningSql).toMatch(/Challenge % has ended/);
+    });
+
+    it('confirms claim_challenge_reward derives completion strictly from target_goal with row lock', () => {
+      expect(hardeningSql).toMatch(/FOR UPDATE;/);
+      expect(hardeningSql).toMatch(/IF v_user_ch\.current_progress < v_challenge\.target_goal THEN/);
+      expect(hardeningSql).toMatch(/is below target goal/);
+      expect(hardeningSql).toMatch(/UPDATE public\.user_challenges\s+SET is_completed = true,\s+reward_claimed = true/m);
+      expect(hardeningSql).toMatch(/INSERT INTO public\.xp_ledger[\s\S]*'challenge_reward'/);
+    });
+  });
 });
