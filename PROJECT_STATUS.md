@@ -41,6 +41,7 @@
   12. `96d97cf` ("docs: record commit 1bdfb07 in PROJECT_STATUS.md")
   13. `c4f254f` ("fix(security): resolve Stage 9.1 audit findings with hardened migrations, RPCs, and least privilege")
   14. `be1d34e` ("docs: record commit c4f254f in PROJECT_STATUS.md")
+  15. `65ad8b9` ("fix(security): resolve Stage 9.2 database consistency, direct query privacy, and challenge checks")
 - **Current Branch**: `main`
 - **Configured Remote**: None configured locally. Remote target identified as `https://github.com/venkatyallapu24/ECO_quiz.git` (HTTP 200 reachable), pending authorization to attach.
 
