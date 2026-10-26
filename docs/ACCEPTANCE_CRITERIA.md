@@ -86,11 +86,11 @@ Criteria must be marked only as:
 
 | # | Criterion | Status | Evidence / Verification Method |
 |---|---|---|---|
-| 6.1 | Category selection, difficulty tiers, and Practice/Timed modes work | **NOT RUN** | Future stage |
-| 6.2 | Answer keys and explanations completely withheld until submission | **NOT RUN** | Future stage |
-| 6.3 | Timed attempts strictly enforce server-side expiration | **NOT RUN** | Future stage |
-| 6.4 | Results page shows accurate score, explanations, and citations | **NOT RUN** | Future stage |
-| 6.5 | Replay and duplicate submission attempts safely rejected | **NOT RUN** | Future stage |
+| 6.1 | Category selection, difficulty tiers, and Practice/Timed modes work | **PASS** | Verified in `QuizService.test.ts` and `QuizSessionPage.test.tsx`: Launcher routes query params (`category`, `mode`, `difficulty`), correctly filtering questions across 7 domains. Practice mode provides untimed study navigation; Timed mode activates 25s timer with +15s grace buffer. |
+| 6.2 | Answer keys and explanations completely withheld until submission | **PASS** | Verified in `QuizService.test.ts` security invariant test: `quizService.createSession` strips `correctOptionId`, `explanation`, `keyTakeaway`, and option `isCorrect` indicators before sending to client. DOM inspection verifies zero explanation/answer leakage prior to submission. |
+| 6.3 | Timed attempts strictly enforce server-side expiration | **PASS** | Verified in `QuizService.test.ts`: Server marks session expired if submission exceeds `(questions.length * 25s) + 15s grace buffer` (265s total window). Client UI renders 25s countdown timer with warning state and automatic question progression. |
+| 6.4 | Results page shows accurate score, explanations, and citations | **PASS** | Verified in `QuizSessionPage.test.tsx`: Authoritative server evaluation returns score, accuracy %, time taken, XP breakdown (base, speed, all-clear), peer-reviewed explanations (IPCC AR6, UNEP, NOAA, IEA), and key environmental takeaways. |
+| 6.5 | Replay and duplicate submission attempts safely rejected | **PASS** | Verified in `QuizService.test.ts`: Submitting an already-evaluated session ID is rejected with error (`Quiz session already submitted and evaluated`). Transient network failures are handled with recoverable retry without losing student answers. |
 
 ---
 

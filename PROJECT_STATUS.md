@@ -2,10 +2,10 @@
 
 ## 1. Current Stage
 
-**Stage 5 — Student Dashboard & Progress Hub (Completed, Awaiting Review)**
-- Current Task ID: `ECOQUEST-STAGE-5` (`ECO-STAGE-5-DASHBOARD`)
-- Status: Stage 5 Student Dashboard and Progress Hub fully implemented. Welcoming student greeting, canonical 10-level XP progression calculations (`getLevelProgress`), streak and freeze indicators, 3 daily student missions with 00:00 UTC boundary countdown (`getTimeUntilUtcMidnight`) and +50 XP bonus, recent quiz attempts with score and retake actions, study recommendations, and interactive first-time empty state toggle with data transparency notices.
-- Progress: All 39 automated tests passing across 5 test suites (`Progression.test.ts`, `DashboardPage.test.tsx`, `LandingPage.test.tsx`, `DesignSystem.test.tsx`, `App.test.tsx`), TypeScript clean (0 errors), production build verified (759ms). Awaiting independent review before Stage 6: Quiz Engine.
+**Stage 6 — Environmental Quiz Engine (Completed, Awaiting Review)**
+- Current Task ID: `ECOQUEST-STAGE-6` (`ECO-STAGE-6-QUIZ-ENGINE`)
+- Status: Stage 6 Environmental Quiz Engine fully implemented. 10-question evaluation journey honoring `category`, `mode`, and `difficulty` parameters across 7 environmental science domains. Practice mode (untimed study focus) and Timed mode (25s per question + 15s grace buffer). Strict server/client answer secrecy enforced (answer keys and explanations completely stripped before client delivery; authoritatively evaluated by server). Submission idempotency and duplicate prevention verified. Comprehensive results screen with score, accuracy %, time taken, XP breakdown (base, speed, perfect session), peer-reviewed explanations (IPCC AR6, UNEP, NOAA, IEA), and key environmental takeaways. Keyboard navigation (1–4, A–D, Enter) and `prefers-reduced-motion` accessibility verified.
+- Progress: All 51 automated tests passing across 7 test suites (`QuizService.test.ts`, `QuizSessionPage.test.tsx`, `DashboardPage.test.tsx`, `LandingPage.test.tsx`, `Progression.test.ts`, `DesignSystem.test.tsx`, `App.test.tsx`), TypeScript check clean (`tsc --noEmit`, 0 errors), production build verified (777ms). Awaiting independent review before Stage 7: Gamification System.
 
 ---
 
@@ -26,11 +26,13 @@
 
 ## 3. Git Repository Status
 
-- **Local Repository**: Initialized empty Git repository on branch `main` via `git init -b main`.
+- **Local Repository**: Initialized Git repository on branch `main`.
 - **Commits on `main`**:
   1. `fff1e32` ("docs: establish EcoQuest project baseline")
   2. `6fd9a20` ("feat(app): establish Stage 2 application foundation, routes, and tests")
   3. `c8b0e71` ("feat(ui,landing): implement Stage 3 design system and Stage 4 public landing page")
+  4. `220619e` ("docs: reconcile commit hash references in PROJECT_STATUS.md")
+  5. `9b34dd5` ("feat(dashboard): implement Stage 5 student dashboard, progression logic, and tests")
 - **Current Branch**: `main`
 - **Configured Remote**: None configured locally. Remote target identified as `https://github.com/venkatyallapu24/ECO_quiz.git` (HTTP 200 reachable), pending authorization to attach.
 
@@ -41,12 +43,12 @@
 All required project documentation files are established and tracked:
 
 1. `AGENTS.md` (Role, operational workflow, stage gates, security constraints) — **COMMITTED**
-2. `PROJECT_STATUS.md` (Current project status, toolchain state, acceptance tracking) — **PRESENT**
+2. `PROJECT_STATUS.md` (Current project status, toolchain state, acceptance tracking) — **UPDATED (Stage 6 Completed)**
 3. `docs/EcoQuest_Master_Prompts_and_Workflow.md` (Master prompt pack and stage definitions) — **COMMITTED**
 4. `docs/PRODUCT_SPEC.md` (Product specification, quiz engine, 10 levels, streaks, missions, challenges) — **COMMITTED**
 5. `docs/TECHNICAL_DECISIONS.md` (Architecture, React/Vite/Tailwind/Supabase stack, RLS, RPC) — **COMMITTED**
 6. `docs/AGENT_HANDOFF.md` (Agent handoff protocol, report format, ChatGPT review gates) — **COMMITTED**
-7. `docs/ACCEPTANCE_CRITERIA.md` (Stage-by-stage acceptance criteria register) — **UPDATED (Stage 3 PASS)**
+7. `docs/ACCEPTANCE_CRITERIA.md` (Stage-by-stage acceptance criteria register) — **UPDATED (Stage 6 PASS)**
 8. `docs/DEPLOYMENT_RUNBOOK.md` (Hosting architecture, env vars, rollback plan, verification checklist) — **COMMITTED**
 9. `docs/KNOWN_ISSUES.md` (Verified issue register with resolved and active items) — **COMMITTED**
 
@@ -68,11 +70,16 @@ All required project documentation files are established and tracked:
   - `LoadingState`: Accessible `role="status"` spinner with descriptive labels.
   - `AnswerOption`: Multiple-choice quiz option with idle, selected, correct, and incorrect states.
   - `QuestionCard`: 10-question session container with timer bar, category badge, and difficulty pill.
-- **Pages Styled**: LandingPage (updated to student-focused IA with benefit row), DashboardPage, QuizLauncherPage, LibraryPage, LeaderboardPage, ProfilePage.
+- **Pages Implemented**:
+  - `LandingPage`: Modern campus sustainability homepage with value proposition, domain cards, interactive preview, and live campus impact ticker.
+  - `DashboardPage`: Student progress hub with level progression, daily missions, streak tracker, and recent attempts.
+  - `QuizLauncherPage`: Domain launcher with category filtering, difficulty selection (Easy, Medium, Hard), and mode selection (Practice vs Timed).
+  - `QuizSessionPage`: Full 10-question evaluation journey with 25s timer (+15s grace), question dots navigator, keyboard shortcuts, recoverable error handling, and comprehensive scientific results screen.
+  - `LibraryPage`, `LeaderboardPage`, `ProfilePage`: Scaffolding in place for upcoming stages.
 - **Development & Build Verification**:
   - `npm run typecheck`: 0 TypeScript errors.
-  - `npm run test`: 17 automated tests passing across 2 test suites.
-  - `npm run build`: Production bundle generated in `dist/` in 722ms.
+  - `npm run test`: 51 automated tests passing across 7 test suites.
+  - `npm run build`: Production bundle generated in `dist/` in 777ms (33.00 kB CSS, 292.37 kB JS).
 
 ---
 
@@ -80,17 +87,16 @@ All required project documentation files are established and tracked:
 
 | Command | Exit Code | Verified Result |
 |---|---|---|
-| `git commit -m "feat(ui,landing)..."` | 0 | Commit `c8b0e71` created on `main` (26 files changed) |
 | `npm run typecheck` | 0 | Clean TypeScript check (`tsc --noEmit`) with 0 errors |
-| `npm run test` | 0 | 39 Vitest tests passed across 5 test suites |
-| `npm run build` | 0 | Production build generated in `dist/` (31.62 kB CSS, 252.52 kB JS in 759ms) |
+| `npm run test` | 0 | 51 Vitest tests passed across 7 test suites |
+| `npm run build` | 0 | Production build generated in `dist/` (33.00 kB CSS, 292.37 kB JS in 777ms) |
 
 ---
 
 ## 7. Outstanding Decisions and Next Action
 
 - **Outstanding Approvals**:
-  1. Formal sign-off on Stage 5: Student Dashboard & Progress Hub (`ECOQUEST-STAGE-5`).
-  2. Authorize staging and committing Stage 5 files on `main`.
-  3. Authorize configuring Git remote `origin` to `https://github.com/venkatyallapu24/ECO_quiz.git`.
-- **Next Eligible Prompt**: Prompt 9 — Stage 6: Environmental Quiz Engine (`ECO-STAGE-6-QUIZ-ENGINE`) to implement the 10-question quiz session state machine, 25s timer with 15s grace buffer, client answer secrecy audit, and server-side scoring verification.
+  1. Formal sign-off on Stage 6: Environmental Quiz Engine (`ECOQUEST-STAGE-6`).
+  2. Authorize staging and committing Stage 6 files locally on `main`.
+  3. Authorize configuring Git remote `origin` to `https://github.com/venkatyallapu24/ECO_quiz.git` when appropriate.
+- **Next Eligible Prompt**: Prompt 10 — Stage 7: Gamification System (`ECO-STAGE-7-GAMIFICATION`) to implement persistent XP calculation engine, streak timezone tracking, level transitions, daily missions reset, and anti-abuse validation.

@@ -107,38 +107,38 @@ export const DashboardPage: React.FC = () => {
 
   return (
     <div className="space-y-8 py-2">
-      {/* 1. Welcome Header & Next Action Banner */}
+      {/* 1. Welcome Header & Next Action Banner (Light Campus Workspace) */}
       <section
-        className="bg-eco-forest text-white p-6 sm:p-8 rounded-3xl shadow-eco relative overflow-hidden"
+        className="bg-white border border-eco-canvas-border p-6 sm:p-8 rounded-3xl shadow-eco-sm relative"
         aria-labelledby="dashboard-welcome-heading"
       >
-        <div className="relative z-10 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
           <div className="space-y-3 max-w-2xl">
             <div className="flex flex-wrap items-center gap-2">
               <LevelBadge level={progressDetails.currentLevel.level} size="md" />
               <StreakIndicator days={activeStreak} size="sm" />
-              <Badge variant="forest" size="sm" className="bg-eco-forest-light text-eco-lime border-eco-emerald/40">
-                <Sparkles className="w-3 h-3 text-eco-lime inline mr-1" />
+              <Badge variant="sage" size="sm">
+                <Sparkles className="w-3 h-3 text-eco-forest inline mr-1" />
                 {progressDetails.currentLevel.title}
               </Badge>
             </div>
 
             <h1
               id="dashboard-welcome-heading"
-              className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight leading-tight"
+              className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-eco-forest tracking-tight leading-tight"
             >
               {isFirstTimeUser
                 ? 'Welcome to EcoQuest, Student!'
                 : `Welcome back, ${user?.displayName ?? 'Learner'}!`}
             </h1>
 
-            <p className="text-xs sm:text-sm text-eco-canvas-subtle/85 leading-relaxed max-w-xl">
+            <p className="text-xs sm:text-sm text-eco-text-muted leading-relaxed max-w-xl">
               {progressDetails.isMaxLevel ? (
                 'You have achieved the highest rank of Biosphere Guardian. Keep testing your knowledge to maintain your mastery.'
               ) : (
                 <>
-                  You have earned <strong className="text-white font-bold">{activeXp} XP</strong> and are{' '}
-                  <strong className="text-eco-lime font-bold">{progressDetails.xpRemaining} XP away</strong> from{' '}
+                  You have earned <strong className="text-eco-forest font-bold">{activeXp} XP</strong> and are{' '}
+                  <strong className="text-eco-forest font-bold">{progressDetails.xpRemaining} XP away</strong> from{' '}
                   Level {progressDetails.nextLevel?.level} ({progressDetails.nextLevel?.title}).
                 </>
               )}
@@ -156,7 +156,6 @@ export const DashboardPage: React.FC = () => {
                 }
                 size="sm"
                 variant="emerald"
-                className="text-white"
               />
             </div>
           </div>
@@ -168,6 +167,7 @@ export const DashboardPage: React.FC = () => {
                 variant="primary"
                 size="lg"
                 fullWidth
+                className="bg-eco-forest hover:bg-eco-forest-hover text-white shadow-eco-md rounded-2xl font-bold"
                 leftIcon={<PlayCircle className="w-5 h-5 text-eco-lime" />}
               >
                 Start a Quiz (10 Qs)
@@ -175,11 +175,11 @@ export const DashboardPage: React.FC = () => {
             </Link>
             <Link to="/library" className="w-full">
               <Button
-                variant="outline"
+                variant="secondary"
                 size="md"
                 fullWidth
-                className="text-white border-white/30 hover:bg-white/10 hover:border-white"
-                leftIcon={<BookOpen className="w-4 h-4 text-eco-sage-light" />}
+                className="bg-white hover:bg-eco-canvas border border-eco-canvas-border text-eco-forest rounded-2xl"
+                leftIcon={<BookOpen className="w-4 h-4 text-eco-forest" />}
               >
                 Browse Library
               </Button>

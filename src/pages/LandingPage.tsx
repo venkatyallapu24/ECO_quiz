@@ -15,6 +15,7 @@ import {
   CheckCircle2,
   Lock,
   Flame,
+  Award,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -25,6 +26,7 @@ import { QuizMode, Difficulty } from '@/types';
 interface CategoryItem {
   id: string;
   name: string;
+  displayTitle: string;
   desc: string;
   icon: string;
   questionsCount: number;
@@ -52,25 +54,29 @@ export const LandingPage: React.FC = () => {
   const benefitItems = [
     {
       title: 'Learn',
-      desc: 'Peer-reviewed climate, energy, and biodiversity facts sourced from the IPCC AR6 and UNEP.',
+      desc: 'Gain real-world knowledge about our environment.',
+      iconBg: 'bg-emerald-50 text-eco-forest',
       icon: GraduationCap,
-      badge: 'Scientific Citations',
+      badge: 'Peer-Reviewed',
     },
     {
       title: 'Play',
-      desc: 'Bite-sized 10-question practice and timed sessions designed to fit right between university lectures.',
+      desc: 'Fun quizzes and challenges designed for students.',
+      iconBg: 'bg-sky-50 text-sky-700',
       icon: Gamepad2,
       badge: '10 Qs / Session',
     },
     {
       title: 'Grow',
-      desc: 'Climb 10 ecological levels from Sprout to Biosphere Guardian with verified XP and streak freezes.',
+      desc: 'Earn XP, unlock badges and track your progress.',
+      iconBg: 'bg-amber-50 text-amber-700',
       icon: TrendingUp,
       badge: '10 Ranks',
     },
     {
       title: 'Connect',
-      desc: 'Compare mastery on student leaderboards with opt-in pseudonyms and complete campus cohort privacy.',
+      desc: 'Be part of a campus community creating real impact.',
+      iconBg: 'bg-purple-50 text-purple-700',
       icon: Users,
       badge: 'Student Privacy',
     },
@@ -80,6 +86,7 @@ export const LandingPage: React.FC = () => {
     {
       id: 'climate',
       name: 'Climate & Atmosphere',
+      displayTitle: 'Climate Change & Atmosphere',
       desc: 'Greenhouse gas radiative forcing, atmospheric PPM trends, carbon budgeting, and climate feedback loops.',
       icon: '🌍',
       questionsCount: 45,
@@ -90,6 +97,7 @@ export const LandingPage: React.FC = () => {
     {
       id: 'biodiversity',
       name: 'Biodiversity & Ecosystems',
+      displayTitle: 'Biodiversity & Ecosystems',
       desc: 'Trophic cascades, wildlife migration corridors, biome integrity, and endangered species protection.',
       icon: '🌿',
       questionsCount: 38,
@@ -100,6 +108,7 @@ export const LandingPage: React.FC = () => {
     {
       id: 'energy',
       name: 'Clean Energy & Grid',
+      displayTitle: 'Renewable Energy & Technology',
       desc: 'Photovoltaic efficiency, offshore wind aerodynamics, battery storage chemistry, and decentralized microgrids.',
       icon: '⚡',
       questionsCount: 30,
@@ -110,6 +119,7 @@ export const LandingPage: React.FC = () => {
     {
       id: 'waste',
       name: 'Circular Economy & Waste',
+      displayTitle: 'Circular Economy & Waste',
       desc: 'Campus material flows, lifecycle analysis, microplastics reduction, and industrial composting chemistry.',
       icon: '♻️',
       questionsCount: 28,
@@ -120,6 +130,7 @@ export const LandingPage: React.FC = () => {
     {
       id: 'water',
       name: 'Water & Marine Systems',
+      displayTitle: 'Water Resources & Marine Conservation',
       desc: 'Watershed hydrology, ocean acidification, marine protected reserves, and groundwater depletion dynamics.',
       icon: '💧',
       questionsCount: 32,
@@ -130,6 +141,7 @@ export const LandingPage: React.FC = () => {
     {
       id: 'food',
       name: 'Sustainable Agriculture & Food',
+      displayTitle: 'Sustainable Food & Agriculture',
       desc: 'Regenerative soil biology, nitrogen runoff mitigation, agroforestry, and university dining food-waste reduction.',
       icon: '🌾',
       questionsCount: 25,
@@ -140,6 +152,7 @@ export const LandingPage: React.FC = () => {
     {
       id: 'cities',
       name: 'Green Cities & Transit',
+      displayTitle: 'Green Cities & Clean Transport',
       desc: 'Urban heat island mitigation, transit electrification, district heating, and municipal green space coverage.',
       icon: '🏙️',
       questionsCount: 22,
@@ -151,19 +164,28 @@ export const LandingPage: React.FC = () => {
 
   const steps = [
     {
-      step: '01',
+      step: '1',
       title: 'Choose Your Topic',
-      desc: 'Pick from 7 peer-reviewed environmental categories or launch a mixed campus round.',
+      desc: 'Pick an environmental topic you\'re curious about.',
+      icon: BookOpen,
     },
     {
-      step: '02',
+      step: '2',
       title: 'Test Your Knowledge',
-      desc: 'Engage with relaxed untimed Practice mode or high-focus 25-second Timed mode.',
+      desc: 'Answer questions and learn as you go.',
+      icon: PlayCircle,
     },
     {
-      step: '03',
+      step: '3',
       title: 'Level Up & Retain',
-      desc: 'Earn server-verified XP, climb 10 ecological tiers, and maintain your daily learning streak.',
+      desc: 'Get XP, unlock levels and collect badges.',
+      icon: Award,
+    },
+    {
+      step: '4',
+      title: 'Join the Community',
+      desc: 'Take on challenges and help create a greener campus.',
+      icon: Users,
     },
   ];
 
@@ -173,6 +195,7 @@ export const LandingPage: React.FC = () => {
       const matchesSearch =
         searchQuery.trim() === '' ||
         cat.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        cat.displayTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
         cat.desc.toLowerCase().includes(searchQuery.toLowerCase()) ||
         cat.topics.some((t) => t.toLowerCase().includes(searchQuery.toLowerCase()));
 
@@ -184,116 +207,282 @@ export const LandingPage: React.FC = () => {
   }, [categories, searchQuery, selectedGroup]);
 
   const handleLaunchQuickQuiz = () => {
-    navigate(`/quiz?category=${quickCategory}&mode=${quickMode}&difficulty=${quickDifficulty}`);
+    navigate(`/quiz/play?category=${quickCategory}&mode=${quickMode}&difficulty=${quickDifficulty}`);
   };
 
   return (
-    <div className="space-y-16 sm:space-y-24 py-4 sm:py-6">
-      {/* 1. Hero Section */}
-      <section className="text-center max-w-3xl mx-auto space-y-6 pt-2" aria-labelledby="hero-heading">
-        <div className="inline-flex items-center gap-2">
-          <Badge variant="sage" size="md">
-            <Sparkles className="w-3.5 h-3.5 text-eco-emerald" />
-            Campus Sustainability Platform
-          </Badge>
+    <div className="space-y-12 sm:space-y-16 pb-12 animate-fadeIn">
+      {/* 1. Hero Section matching approved campus reference */}
+      <section
+        className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center pt-2 sm:pt-6"
+        aria-labelledby="hero-heading"
+      >
+        <div className="lg:col-span-7 space-y-6">
+          <div className="inline-flex items-center gap-2">
+            <span className="text-[11px] font-bold uppercase tracking-widest text-eco-forest bg-eco-sage-light/70 px-3 py-1 rounded-full border border-eco-sage-border">
+              For a Greener Campus and Planet
+            </span>
+          </div>
+
+          <h1
+            id="hero-heading"
+            className="text-4xl sm:text-5xl lg:text-[54px] font-black text-eco-text tracking-tight leading-[1.08]"
+          >
+            Small Quizzes.<br />
+            <span className="text-eco-forest">Big Change.</span>
+            <span className="sr-only"> — Environmental learning built for students, backed by science.</span>
+          </h1>
+
+          <p className="text-base sm:text-lg text-eco-text-muted leading-relaxed max-w-xl">
+            Learn about the environment, build real-world knowledge, earn rewards, and join a community of students making a positive impact — on campus and beyond.
+          </p>
+
+          <p className="sr-only">
+            Master climate science, clean energy, and conservation through bite-sized, 10-question sessions designed for student schedules.
+          </p>
+
+          {/* Primary and Secondary CTA matching reference design */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
+            <Link to="/quiz" className="w-full sm:w-auto">
+              <Button
+                variant="primary"
+                size="lg"
+                className="w-full sm:w-auto rounded-full px-7 py-3.5 bg-eco-forest hover:bg-eco-forest-hover text-white shadow-eco-md flex items-center justify-center gap-2.5 font-bold group"
+                leftIcon={<PlayCircle className="w-5 h-5 text-eco-lime" />}
+                rightIcon={<ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />}
+              >
+                Start a Quiz (10 Qs)
+              </Button>
+            </Link>
+            <Link to="/library" className="w-full sm:w-auto">
+              <Button
+                variant="secondary"
+                size="lg"
+                className="w-full sm:w-auto rounded-full px-7 py-3.5 bg-white hover:bg-eco-canvas border border-eco-canvas-border text-eco-forest font-semibold shadow-eco-sm"
+                leftIcon={<BookOpen className="w-5 h-5 text-eco-forest" />}
+              >
+                Explore the Library
+              </Button>
+            </Link>
+          </div>
+
+          {/* Trust Badges & Scientific Integrity Indicators */}
+          <div className="pt-2 flex flex-wrap items-center gap-4 text-xs text-eco-text-light font-medium">
+            <span className="inline-flex items-center gap-1.5">
+              <ShieldCheck className="w-4 h-4 text-eco-emerald" />
+              IPCC, UNEP & NOAA Citations
+            </span>
+            <span className="text-eco-canvas-border">•</span>
+            <span className="inline-flex items-center gap-1.5">
+              <Lock className="w-3.5 h-3.5 text-eco-forest" />
+              100% Server-Scored
+            </span>
+            <span className="text-eco-canvas-border hidden sm:inline">•</span>
+            <span className="inline-flex items-center gap-1.5 hidden sm:inline">
+              <Flame className="w-3.5 h-3.5 text-amber-600" />
+              Timezone-Aware Streaks
+            </span>
+          </div>
         </div>
 
-        <h1
-          id="hero-heading"
-          className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-eco-forest tracking-tight leading-[1.12]"
-        >
-          Environmental learning built for students, backed by science.
-        </h1>
-
-        <p className="text-base sm:text-lg text-eco-text-muted max-w-2xl mx-auto leading-relaxed">
-          Master climate science, clean energy, and conservation through bite-sized, 10-question sessions designed for student schedules. Earn server-verified ecological XP without promotional clutter or greenwashing.
-        </p>
-
-        {/* Primary and Secondary CTA */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-          <Link to="/quiz" className="w-full sm:w-auto">
-            <Button
-              variant="primary"
-              size="lg"
-              fullWidth
-              leftIcon={<PlayCircle className="w-5 h-5 text-eco-lime" />}
-            >
-              Start a Quiz (10 Qs)
-            </Button>
-          </Link>
-          <Link to="/library" className="w-full sm:w-auto">
-            <Button
-              variant="secondary"
-              size="lg"
-              fullWidth
-              leftIcon={<BookOpen className="w-5 h-5 text-eco-forest" />}
-            >
-              Explore the Library
-            </Button>
-          </Link>
-        </div>
-
-        {/* Trust Badges */}
-        <div className="pt-2 flex flex-wrap items-center justify-center gap-4 text-xs text-eco-text-light font-medium">
-          <span className="inline-flex items-center gap-1.5">
-            <ShieldCheck className="w-4 h-4 text-eco-emerald" />
-            IPCC, UNEP & NOAA Citations
-          </span>
-          <span className="hidden sm:inline text-eco-canvas-border">•</span>
-          <span className="inline-flex items-center gap-1.5">
-            <Lock className="w-3.5 h-3.5 text-eco-forest" />
-            100% Server-Scored (Zero Client Leakage)
-          </span>
-          <span className="hidden sm:inline text-eco-canvas-border">•</span>
-          <span className="inline-flex items-center gap-1.5">
-            <Flame className="w-3.5 h-3.5 text-amber-600" />
-            Timezone-Aware Streaks
-          </span>
+        {/* Hero Image with Collegiate Campus Vibe */}
+        <div className="lg:col-span-5 relative">
+          <div className="relative mx-auto max-w-md lg:max-w-none">
+            <img
+              src="/images/campus_students_hero.jpg"
+              alt="University students learning together outdoors on green campus"
+              className="w-full h-[320px] sm:h-[400px] object-cover rounded-3xl shadow-eco-md border-4 border-white"
+            />
+            {/* Friendly Collegiate Badge */}
+            <div className="absolute -top-3 -right-3 sm:-top-4 sm:-right-4 bg-eco-forest text-white px-4 py-2 rounded-2xl shadow-eco-md -rotate-3 text-xs font-bold flex items-center gap-1.5 border-2 border-white">
+              <span>Greener Campus, Brighter Futures</span>
+              <span>🍃</span>
+            </div>
+            {/* Note badge */}
+            <div className="absolute -bottom-3 -left-3 sm:-bottom-4 sm:-left-4 bg-white/95 backdrop-blur-sm text-eco-forest px-4 py-2 rounded-2xl shadow-eco border border-eco-canvas-border text-xs font-bold flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-amber-500" />
+              <span>Learn • Act • Grow Together</span>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* 2. Compact Benefit Row (Learn, Play, Grow, Connect) */}
+      {/* 2. Compact Benefit Strip matching reference (Learn, Play, Grow, Connect) */}
       <section aria-label="Key Platform Benefits">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {benefitItems.map((item) => {
-            const Icon = item.icon;
-            return (
-              <div
-                key={item.title}
-                className="bg-white p-5 rounded-2xl border border-eco-canvas-border shadow-eco-sm hover:border-eco-sage/80 transition-all duration-150 hover:-translate-y-0.5"
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <div className="w-10 h-10 rounded-xl bg-eco-sage-light text-eco-forest flex items-center justify-center">
+        <div className="bg-white rounded-2xl border border-eco-canvas-border shadow-eco-sm p-4 sm:p-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-eco-canvas-border">
+            {benefitItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <div key={item.title} className="p-3 sm:px-5 flex items-start gap-3.5 first:pt-0 last:pb-0 sm:first:pl-2 sm:last:pr-2">
+                  <div className={`w-11 h-11 rounded-xl ${item.iconBg} flex items-center justify-center shrink-0`}>
                     <Icon className="w-5 h-5" />
                   </div>
-                  <span className="text-[10px] font-semibold tracking-wider text-eco-sage-dark bg-eco-canvas-subtle px-2 py-0.5 rounded-full border border-eco-canvas-border">
-                    {item.badge}
-                  </span>
+                  <div>
+                    <h2 className="text-base font-bold text-eco-text leading-tight">{item.title}</h2>
+                    <p className="text-xs text-eco-text-muted leading-relaxed mt-0.5">{item.desc}</p>
+                  </div>
                 </div>
-                <h2 className="text-base font-bold text-eco-text mb-1">{item.title}</h2>
-                <p className="text-xs text-eco-text-muted leading-relaxed">{item.desc}</p>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       </section>
 
-      {/* 3. Interactive Quick Quiz Launcher Card */}
-      <section className="bg-white rounded-3xl border border-eco-canvas-border shadow-eco p-6 sm:p-8 space-y-6" aria-labelledby="quick-launcher-heading">
+      {/* 3. Seven Environmental Categories matching reference screenshot with search */}
+      <section className="space-y-6" aria-labelledby="topics-heading">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div>
+            <div className="text-[11px] font-bold uppercase tracking-wider text-eco-emerald">
+              Explore Our Categories
+            </div>
+            <h2 id="topics-heading" className="text-2xl sm:text-3xl font-extrabold text-eco-forest tracking-tight mt-0.5">
+              Choose a Topic You Care About
+            </h2>
+            <div className="sr-only">
+              Environmental Study Domains
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            {/* Topic Search Bar */}
+            <div className="w-56 sm:w-64 relative">
+              <Search className="w-4 h-4 text-eco-text-light absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search topics..."
+                aria-label="Search environmental topics"
+                className="w-full pl-9 pr-3 py-1.5 rounded-xl border border-eco-canvas-border bg-white text-xs text-eco-text placeholder:text-eco-text-light focus:outline-none focus:ring-2 focus:ring-eco-forest"
+              />
+            </div>
+
+            <Link
+              to="/quiz"
+              className="text-xs font-bold text-eco-forest hover:text-eco-emerald inline-flex items-center gap-1 transition-colors self-start sm:self-auto shrink-0 group"
+            >
+              <span>View All</span>
+              <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
+            </Link>
+          </div>
+        </div>
+
+        {/* 7 Cards Responsive Grid */}
+        {filteredCategories.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-3 sm:gap-4">
+            {filteredCategories.map((cat) => (
+              <div
+                key={cat.id}
+                className="group relative rounded-2xl overflow-hidden border border-eco-canvas-border shadow-eco-sm hover:shadow-eco hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between p-4 min-h-[200px] bg-gradient-to-br from-eco-forest/90 to-eco-forest-deep text-white"
+              >
+                {/* Darkened Gradient for text legibility */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent pointer-events-none" />
+
+                <div className="relative z-10 flex items-center justify-between">
+                  <span className="w-9 h-9 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-lg border border-white/30">
+                    {cat.icon}
+                  </span>
+                  <Link
+                    to={`/quiz?category=${cat.id}`}
+                    aria-label={`Launch 10 Qs in ${cat.name}`}
+                    className="w-7 h-7 rounded-full bg-white text-eco-forest flex items-center justify-center shadow group-hover:bg-eco-lime group-hover:text-eco-forest-deep transition-colors"
+                  >
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+
+                <div className="relative z-10 space-y-1.5 pt-4">
+                  <h3 className="text-xs sm:text-sm font-bold text-white leading-snug line-clamp-2">
+                    {cat.name}
+                  </h3>
+
+                  <div className="text-[10px] text-white/75 truncate" title={cat.citation}>
+                    {cat.citation}
+                  </div>
+
+                  <Link
+                    to={`/quiz?category=${cat.id}`}
+                    className="inline-flex items-center gap-1 text-[11px] font-bold text-eco-lime hover:underline pt-1"
+                  >
+                    Launch 10 Qs
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <EmptyState
+            title="No matching study domains"
+            description={`No environmental categories matched "${searchQuery}".`}
+            actionLabel="Reset Search Filter"
+            onAction={() => {
+              setSearchQuery('');
+              setSelectedGroup('all');
+            }}
+          />
+        )}
+      </section>
+
+      {/* 4. How EcoQuest Works Section matching reference */}
+      <section className="bg-white rounded-3xl border border-eco-canvas-border shadow-eco-sm p-6 sm:p-10" aria-labelledby="how-it-works-heading">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          <div className="lg:col-span-4 space-y-2">
+            <h2 id="how-it-works-heading" className="text-2xl sm:text-3xl font-extrabold text-eco-forest tracking-tight">
+              How EcoQuest Works
+            </h2>
+            <p className="text-xs sm:text-sm text-eco-text-muted leading-relaxed">
+              A simple way for students to learn, get involved, and make a difference.
+            </p>
+          </div>
+
+          <div className="lg:col-span-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {steps.map((st) => {
+                const Icon = st.icon;
+                return (
+                  <div key={st.step} className="p-4 rounded-2xl bg-eco-canvas-subtle/50 border border-eco-canvas-border space-y-2.5">
+                    <div className="flex items-center justify-between">
+                      <span className="w-8 h-8 rounded-full bg-eco-forest text-eco-lime font-black text-xs flex items-center justify-center shadow-eco-sm">
+                        {st.step}
+                      </span>
+                      <Icon className="w-4 h-4 text-eco-forest" />
+                    </div>
+
+                    <h3 className="text-sm font-bold text-eco-text">
+                      {st.title}
+                    </h3>
+
+                    <p className="text-xs text-eco-text-muted leading-relaxed">
+                      {st.desc}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 5. Interactive Quick Quiz Launcher Card */}
+      <section
+        className="bg-white rounded-3xl border border-eco-canvas-border shadow-eco p-6 sm:p-8 space-y-6"
+        aria-label="Quick Quiz Launcher"
+      >
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-eco-canvas-border pb-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
               <Badge variant="forest" size="sm">
                 <PlayCircle className="w-3.5 h-3.5 text-eco-lime" />
-                Express Launch
+                Quick Launcher
               </Badge>
-              <span className="text-xs text-eco-text-light font-medium">Standard 10-Question Session</span>
+              <span className="text-xs text-eco-text-light font-medium">10-Question Scientific Session</span>
             </div>
-            <h2 id="quick-launcher-heading" className="text-xl font-bold text-eco-forest">
-              Quick Quiz Launcher
+            <h2 className="text-xl font-bold text-eco-forest">
+              Configure & Start a Session
             </h2>
             <p className="text-xs text-eco-text-muted mt-0.5">
-              Configure and jump straight into a 10-question evaluation in your favorite domain.
+              Jump straight into a 10-question evaluation tailored to your study goals.
             </p>
           </div>
 
@@ -380,7 +569,7 @@ export const LandingPage: React.FC = () => {
                     onClick={() => setQuickDifficulty(d)}
                     className={`py-2 px-1 rounded-lg border text-center capitalize text-xs font-semibold transition-all ${
                       quickDifficulty === d
-                        ? 'border-eco-emerald bg-emerald-50 text-eco-forest'
+                        ? 'border-eco-emerald bg-emerald-50 text-eco-forest ring-1 ring-eco-emerald'
                         : 'border-eco-canvas-border bg-eco-canvas-subtle/40 text-eco-text-muted hover:bg-eco-canvas'
                     }`}
                   >
@@ -401,295 +590,133 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 4. Environmental Topic Categories with Accessible Search & Filter */}
-      <section className="space-y-6" aria-labelledby="topics-heading">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-eco-canvas-border pb-4">
+      {/* 6. Interactive Sample Demonstration Question Card */}
+      <section className="bg-white rounded-3xl border border-eco-canvas-border shadow-eco-sm p-6 sm:p-8 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-eco-canvas-border pb-3">
           <div>
-            <h2 id="topics-heading" className="text-2xl font-bold text-eco-forest tracking-tight">
-              Environmental Study Domains
-            </h2>
-            <p className="text-xs text-eco-text-muted mt-1">
-              Explore 7 structured categories aligned with global environmental science frameworks.
-            </p>
+            <span className="text-[10px] uppercase font-bold tracking-wider text-eco-forest bg-eco-sage-light px-2 py-0.5 rounded">
+              Interactive Preview
+            </span>
+            <h3 className="text-base font-bold text-eco-text mt-1">
+              Sample Question Interaction
+            </h3>
           </div>
-
-          {/* Topic Search Bar */}
-          <div className="w-full sm:w-72 relative">
-            <Search className="w-4 h-4 text-eco-text-light absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search topics (e.g., carbon, solar)..."
-              aria-label="Search environmental topics"
-              className="w-full pl-9 pr-3 py-2 rounded-xl border border-eco-canvas-border bg-white text-xs text-eco-text placeholder:text-eco-text-light focus:outline-none focus:ring-2 focus:ring-eco-forest"
-            />
-          </div>
+          <span className="text-xs text-eco-text-muted">
+            Format preview of 10-Question scientific sessions
+          </span>
         </div>
 
-        {/* Category Group Filter Pills */}
-        <div className="flex flex-wrap items-center gap-2 text-xs">
-          {[
-            { id: 'all', label: 'All 7 Domains' },
-            { id: 'climate', label: 'Climate & Atmosphere' },
-            { id: 'resources', label: 'Resources & Clean Energy' },
-            { id: 'ecosystems', label: 'Ecosystems & Water' },
-            { id: 'urban', label: 'Cities & Mobility' },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => setSelectedGroup(tab.id)}
-              className={`px-3 py-1.5 rounded-full font-medium transition-colors ${
-                selectedGroup === tab.id
-                  ? 'bg-eco-forest text-white'
-                  : 'bg-white border border-eco-canvas-border text-eco-text-muted hover:text-eco-forest hover:bg-eco-canvas'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
+        <div className="bg-eco-canvas-subtle/40 rounded-2xl border border-eco-canvas-border p-5 sm:p-7 max-w-2xl mx-auto space-y-5">
+          <div className="flex items-center justify-between pb-3 border-b border-eco-canvas-border text-xs">
+            <div className="flex items-center gap-2">
+              <Badge variant="sage" size="sm">Climate & Atmosphere</Badge>
+              <Badge variant="warning" size="sm">Medium</Badge>
+            </div>
+            <div className="flex items-center gap-3 font-semibold text-eco-text-muted">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white border border-eco-canvas-border">
+                <Clock className="w-3.5 h-3.5 text-eco-forest" />
+                25s Timer
+              </span>
+              <span>Question 1 of 10</span>
+            </div>
+          </div>
 
-        {/* Categories Grid or Empty State */}
-        {filteredCategories.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {filteredCategories.map((cat) => (
-              <div
-                key={cat.id}
-                className="bg-white p-5 rounded-2xl border border-eco-canvas-border shadow-eco-sm hover:border-eco-sage hover:shadow-eco transition-all duration-150 flex flex-col justify-between group"
-              >
-                <div>
-                  <div className="flex items-start justify-between gap-3 mb-3">
-                    <span className="text-3xl shrink-0 p-2.5 rounded-xl bg-eco-canvas-subtle group-hover:scale-105 transition-transform">
-                      {cat.icon}
-                    </span>
-                    <Badge variant="sage" size="sm">
-                      {cat.questionsCount} Qs
-                    </Badge>
-                  </div>
+          <h4 className="text-base font-bold text-eco-text leading-snug">
+            According to the IPCC Sixth Assessment Report (AR6), which economic sector produces the largest share of global anthropogenic greenhouse gas emissions?
+          </h4>
 
-                  <h3 className="text-base font-bold text-eco-text group-hover:text-eco-forest transition-colors mb-1.5">
-                    {cat.name}
-                  </h3>
-                  <p className="text-xs text-eco-text-muted leading-relaxed mb-3">
-                    {cat.desc}
-                  </p>
-
-                  {/* Topic Tags */}
-                  <div className="flex flex-wrap gap-1.5 mb-4">
-                    {cat.topics.map((t) => (
-                      <span
-                        key={t}
-                        className="text-[10px] font-medium text-eco-sage-dark bg-eco-sage-light/60 px-2 py-0.5 rounded-md"
-                      >
-                        {t}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Footer with Citation & Launch Button */}
-                <div className="pt-3 border-t border-eco-canvas-border flex items-center justify-between gap-2">
-                  <div className="text-[10px] text-eco-text-light truncate max-w-[170px]" title={cat.citation}>
-                    <ShieldCheck className="w-3 h-3 text-eco-emerald inline mr-1" />
-                    {cat.citation}
-                  </div>
-                  <Link
-                    to={`/quiz?category=${cat.id}`}
-                    className="inline-flex items-center gap-1 text-xs font-bold text-eco-forest hover:text-eco-emerald transition-colors"
-                  >
-                    Launch 10 Qs <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
-                </div>
-              </div>
+          <div className="space-y-2.5" role="radiogroup" aria-label="Sample demonstration options">
+            {[
+              { id: 'opt-1', label: 'A', text: 'Electricity and Heat Production (approx. 34% of global total)', isCorrect: true },
+              { id: 'opt-2', label: 'B', text: 'Industry & Chemical Manufacturing', isCorrect: false },
+              { id: 'opt-3', label: 'C', text: 'Agriculture, Forestry, and Other Land Use (AFOLU)', isCorrect: false },
+              { id: 'opt-4', label: 'D', text: 'Passenger Transportation & Aviation', isCorrect: false },
+            ].map((opt) => (
+              <AnswerOption
+                key={opt.id}
+                label={opt.label}
+                text={opt.text}
+                state={
+                  showDemoExplanation
+                    ? opt.isCorrect
+                      ? 'correct'
+                      : demoSelectedOption === opt.id
+                      ? 'incorrect'
+                      : 'idle'
+                    : demoSelectedOption === opt.id
+                    ? 'selected'
+                    : 'idle'
+                }
+                onClick={() => setDemoSelectedOption(opt.id)}
+              />
             ))}
           </div>
-        ) : (
-          <EmptyState
-            title="No matching study domains"
-            description={`No environmental categories matched "${searchQuery}". Try searching for broader terms like "climate", "energy", or "water".`}
-            actionLabel="Reset Search Filter"
-            onAction={() => {
-              setSearchQuery('');
-              setSelectedGroup('all');
-            }}
-          />
-        )}
-      </section>
 
-      {/* 5. How EcoQuest Works & Session Demonstration Card */}
-      <section className="bg-white rounded-3xl border border-eco-canvas-border shadow-eco-sm p-6 sm:p-10 space-y-10" aria-labelledby="how-it-works-heading">
-        <div className="text-center max-w-xl mx-auto">
-          <Badge variant="sage" size="sm" className="mb-2">Defensible Student Learning</Badge>
-          <h2 id="how-it-works-heading" className="text-2xl sm:text-3xl font-bold text-eco-forest tracking-tight">
-            How EcoQuest Works
-          </h2>
-          <p className="text-xs sm:text-sm text-eco-text-muted mt-1.5 leading-relaxed">
-            Short, rigorous sessions built for campus schedules. No filler, no fake metrics—just scientific environmental mastery.
-          </p>
-        </div>
-
-        {/* 3 Step Flow */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {steps.map((st) => (
-            <div key={st.step} className="p-5 rounded-2xl bg-eco-canvas-subtle/70 border border-eco-canvas-border space-y-2">
-              <span className="text-xs font-black text-eco-emerald tracking-widest">{st.step}</span>
-              <h3 className="text-base font-bold text-eco-text">{st.title}</h3>
-              <p className="text-xs text-eco-text-muted leading-relaxed">{st.desc}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* Interactive Demonstration Question Card */}
-        <div className="pt-4 border-t border-eco-canvas-border space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <div>
-              <span className="text-[10px] uppercase font-bold tracking-wider text-eco-sage-dark bg-eco-sage-light px-2 py-0.5 rounded">
-                Format Demonstration
-              </span>
-              <h3 className="text-base font-bold text-eco-text mt-1">
-                Sample Quiz Interaction
-              </h3>
-            </div>
-            <span className="text-xs text-eco-text-muted">
-              Standard 10-Question Session Container
-            </span>
-          </div>
-
-          {/* Sample Interactive Question Card */}
-          <div className="bg-eco-canvas-subtle/40 rounded-2xl border border-eco-canvas-border p-5 sm:p-7 max-w-2xl mx-auto space-y-5">
-            <div className="flex items-center justify-between pb-3 border-b border-eco-canvas-border text-xs">
-              <div className="flex items-center gap-2">
-                <Badge variant="sage" size="sm">Climate & Atmosphere</Badge>
-                <Badge variant="warning" size="sm">Medium</Badge>
+          {showDemoExplanation && (
+            <div className="p-4 rounded-xl bg-white border border-eco-emerald/40 text-xs text-eco-text space-y-1">
+              <div className="font-bold text-eco-forest flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-eco-emerald" />
+                Explanation & Peer-Reviewed Citation
               </div>
-              <div className="flex items-center gap-3 font-semibold text-eco-text-muted">
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white border border-eco-canvas-border">
-                  <Clock className="w-3.5 h-3.5 text-eco-forest" />
-                  25s Timer
-                </span>
-                <span>Question 1 of 10</span>
+              <p className="text-eco-text-muted leading-relaxed">
+                The energy supply sector (electricity and heat production) remains the single largest contributor to global emissions at approximately 34%, followed closely by industry and land use change.
+              </p>
+              <div className="text-[11px] text-eco-text-light pt-1">
+                Source: IPCC AR6 Synthesis Report, Section 2.1 (Emissions Trends)
               </div>
             </div>
+          )}
 
-            <h4 className="text-base font-bold text-eco-text leading-snug">
-              According to the IPCC Sixth Assessment Report (AR6), which economic sector produces the largest share of global anthropogenic greenhouse gas emissions?
-            </h4>
-
-            {/* Answer Options Slot */}
-            <div className="space-y-2.5" role="radiogroup" aria-label="Sample demonstration options">
-              {[
-                { id: 'opt-1', label: 'A', text: 'Electricity and Heat Production (approx. 34% of global total)', isCorrect: true },
-                { id: 'opt-2', label: 'B', text: 'Industry & Chemical Manufacturing', isCorrect: false },
-                { id: 'opt-3', label: 'C', text: 'Agriculture, Forestry, and Other Land Use (AFOLU)', isCorrect: false },
-                { id: 'opt-4', label: 'D', text: 'Passenger Transportation & Aviation', isCorrect: false },
-              ].map((opt) => (
-                <AnswerOption
-                  key={opt.id}
-                  label={opt.label}
-                  text={opt.text}
-                  state={
-                    showDemoExplanation
-                      ? opt.isCorrect
-                        ? 'correct'
-                        : demoSelectedOption === opt.id
-                        ? 'incorrect'
-                        : 'idle'
-                      : demoSelectedOption === opt.id
-                      ? 'selected'
-                      : 'idle'
-                  }
-                  onClick={() => setDemoSelectedOption(opt.id)}
-                />
-              ))}
-            </div>
-
-            {/* Explanation Preview */}
-            {showDemoExplanation && (
-              <div className="p-4 rounded-xl bg-white border border-eco-emerald/40 text-xs text-eco-text space-y-1">
-                <div className="font-bold text-eco-forest flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-eco-emerald" />
-                  Explanation & Peer-Reviewed Citation
-                </div>
-                <p className="text-eco-text-muted leading-relaxed">
-                  The energy supply sector (electricity and heat production) remains the single largest contributor to global emissions at approximately 34%, followed closely by industry and land use change.
-                </p>
-                <div className="text-[11px] text-eco-text-light pt-1">
-                  Source: IPCC AR6 Synthesis Report, Section 2.1 (Emissions Trends)
-                </div>
-              </div>
-            )}
-
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
-              <button
-                type="button"
-                onClick={() => setShowDemoExplanation(!showDemoExplanation)}
-                className="text-xs font-semibold text-eco-forest hover:text-eco-emerald transition-colors"
-              >
-                {showDemoExplanation ? 'Hide Explanation' : 'Preview Explanation'}
-              </button>
-              <Link to="/quiz">
-                <Button variant="primary" size="sm" leftIcon={<PlayCircle className="w-4 h-4 text-eco-lime" />}>
-                  Start Live 10-Question Session
-                </Button>
-              </Link>
-            </div>
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
+            <button
+              type="button"
+              onClick={() => setShowDemoExplanation(!showDemoExplanation)}
+              className="text-xs font-semibold text-eco-forest hover:text-eco-emerald transition-colors"
+            >
+              {showDemoExplanation ? 'Hide Explanation' : 'Preview Explanation'}
+            </button>
+            <Link to="/quiz">
+              <Button variant="primary" size="sm" leftIcon={<PlayCircle className="w-4 h-4 text-eco-lime" />}>
+                Start Live 10-Question Session
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* 6. Campus Integrity & Scientific Standards Callout */}
-      <section className="bg-eco-forest rounded-3xl p-8 sm:p-12 text-white shadow-eco-md space-y-6" aria-labelledby="integrity-heading">
+      {/* 7. Scientific Rigor & Student Integrity (Light Card, No giant dark-green block) */}
+      <section className="bg-white rounded-3xl p-6 sm:p-10 border border-eco-canvas-border shadow-eco-sm space-y-6" aria-labelledby="integrity-heading">
         <div className="max-w-2xl space-y-2">
-          <Badge variant="forest" size="sm" className="bg-eco-forest-light text-eco-lime border-eco-emerald/40">
+          <Badge variant="sage" size="sm">
             Student Data Integrity
           </Badge>
-          <h2 id="integrity-heading" className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+          <h2 id="integrity-heading" className="text-2xl sm:text-3xl font-extrabold text-eco-forest tracking-tight">
             Fair competition. Real scientific citations. Zero greenwashing.
           </h2>
-          <p className="text-xs sm:text-sm text-eco-sage-light leading-relaxed">
+          <p className="text-xs sm:text-sm text-eco-text-muted leading-relaxed">
             EcoQuest is designed as an educational tool for university students and environmental advocates. We adhere to three strict principles:
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-2">
-          <div className="space-y-1.5 p-4 rounded-2xl bg-eco-forest-deep/60 border border-eco-forest-light">
-            <h3 className="text-sm font-bold text-eco-lime">Zero Client-Side Scoring</h3>
-            <p className="text-xs text-eco-sage-light leading-relaxed">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+          <div className="p-4 rounded-2xl bg-eco-canvas-subtle/60 border border-eco-canvas-border space-y-1.5">
+            <h3 className="text-sm font-bold text-eco-forest">Zero Client-Side Scoring</h3>
+            <p className="text-xs text-eco-text-muted leading-relaxed">
               Answer keys and private explanations are kept securely on the server until submission to ensure genuine learning integrity.
             </p>
           </div>
-          <div className="space-y-1.5 p-4 rounded-2xl bg-eco-forest-deep/60 border border-eco-forest-light">
-            <h3 className="text-sm font-bold text-eco-lime">Idempotent Streaks</h3>
-            <p className="text-xs text-eco-sage-light leading-relaxed">
+          <div className="p-4 rounded-2xl bg-eco-canvas-subtle/60 border border-eco-canvas-border space-y-1.5">
+            <h3 className="text-sm font-bold text-eco-forest">Idempotent Streaks</h3>
+            <p className="text-xs text-eco-text-muted leading-relaxed">
               Daily streaks respect your local campus timezone and calculate idempotently at 00:00 UTC without race conditions.
             </p>
           </div>
-          <div className="space-y-1.5 p-4 rounded-2xl bg-eco-forest-deep/60 border border-eco-forest-light">
-            <h3 className="text-sm font-bold text-eco-lime">Opt-In Student Privacy</h3>
-            <p className="text-xs text-eco-sage-light leading-relaxed">
+          <div className="p-4 rounded-2xl bg-eco-canvas-subtle/60 border border-eco-canvas-border space-y-1.5">
+            <h3 className="text-sm font-bold text-eco-forest">Opt-In Student Privacy</h3>
+            <p className="text-xs text-eco-text-muted leading-relaxed">
               Leaderboards allow custom environmental pseudonyms and full opt-out visibility so you can learn without unsolicited tracking.
             </p>
           </div>
-        </div>
-
-        <div className="pt-4 flex flex-col sm:flex-row items-center gap-3">
-          <Link to="/quiz" className="w-full sm:w-auto">
-            <Button variant="primary" size="lg" fullWidth>
-              Begin Your Learning Journey
-            </Button>
-          </Link>
-          <Link to="/library" className="w-full sm:w-auto">
-            <Button
-              variant="outline"
-              size="lg"
-              fullWidth
-              className="text-white border-white/30 hover:bg-white/10 hover:border-white"
-            >
-              Browse Knowledge Library
-            </Button>
-          </Link>
         </div>
       </section>
     </div>

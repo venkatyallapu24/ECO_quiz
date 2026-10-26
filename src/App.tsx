@@ -7,6 +7,7 @@ import { AppLayout } from '@/components/layout/AppLayout';
 import { LandingPage } from '@/pages/LandingPage';
 import { DashboardPage } from '@/pages/DashboardPage';
 import { QuizLauncherPage } from '@/pages/QuizLauncherPage';
+import { QuizSessionPage } from '@/pages/QuizSessionPage';
 import { LibraryPage } from '@/pages/LibraryPage';
 import { LeaderboardPage } from '@/pages/LeaderboardPage';
 import { ProfilePage } from '@/pages/ProfilePage';
@@ -27,6 +28,7 @@ export const App: React.FC = () => {
               {/* Core Learning & Gamification Routes */}
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/quiz" element={<QuizLauncherPage />} />
+              <Route path="/quiz/play" element={<QuizSessionPage />} />
               <Route path="/challenges" element={<DashboardPage />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/settings" element={<ProfilePage />} />

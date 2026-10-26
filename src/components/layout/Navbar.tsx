@@ -11,11 +11,12 @@ export const Navbar: React.FC = () => {
   const { user, progression } = useAuth();
 
   const navLinks = [
+    { name: 'Home', path: '/', icon: Leaf },
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
     { name: 'Play Quiz', path: '/quiz', icon: PlayCircle },
     { name: 'Library', path: '/library', icon: BookOpen },
-    { name: 'Leaderboard', path: '/leaderboard', icon: Trophy },
     { name: 'Challenges', path: '/challenges', icon: Award },
+    { name: 'Leaderboard', path: '/leaderboard', icon: Trophy },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -40,7 +41,7 @@ export const Navbar: React.FC = () => {
     <nav className="bg-white border-b border-eco-canvas-border sticky top-0 z-40 transition-colors" aria-label="Main navigation">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
-          {/* Logo & Brand */}
+          {/* Logo & Brand matching reference */}
           <div className="flex items-center gap-8">
             <Link
               to="/"
@@ -50,16 +51,18 @@ export const Navbar: React.FC = () => {
               <div className="w-9 h-9 rounded-xl bg-eco-forest flex items-center justify-center text-eco-lime shadow-eco-sm">
                 <Leaf className="w-5 h-5 fill-current" />
               </div>
-              <div className="flex items-baseline">
-                <span className="text-xl font-bold tracking-tight text-eco-forest">Eco</span>
-                <span className="text-xl font-bold tracking-tight text-eco-emerald">Quest</span>
-                <span className="ml-2 text-[10px] font-semibold uppercase tracking-wider text-eco-sage-dark bg-eco-sage-light px-1.5 py-0.5 rounded hidden sm:inline">
-                  Campus
+              <div className="flex flex-col">
+                <div className="flex items-baseline">
+                  <span className="text-xl font-bold tracking-tight text-eco-forest">Eco</span>
+                  <span className="text-xl font-bold tracking-tight text-eco-emerald">Quest</span>
+                </div>
+                <span className="text-[10px] text-eco-text-muted font-medium leading-none -mt-0.5 tracking-tight hidden sm:inline">
+                  Students Today. A Greener Tomorrow.
                 </span>
               </div>
             </Link>
 
-            {/* Desktop Navigation Links */}
+            {/* Desktop Navigation Links matching campus style */}
             <div className="hidden md:flex items-center space-x-1" role="menubar">
               {navLinks.map((link) => {
                 const Icon = link.icon;
@@ -69,14 +72,17 @@ export const Navbar: React.FC = () => {
                     key={link.path}
                     to={link.path}
                     role="menuitem"
-                    className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-eco-forest ${
+                    className={`relative inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-eco-forest rounded-lg ${
                       active
-                        ? 'bg-eco-canvas-subtle text-eco-forest font-semibold border border-eco-canvas-border shadow-eco-sm'
+                        ? 'text-eco-forest font-bold'
                         : 'text-eco-text-muted hover:text-eco-forest hover:bg-eco-canvas'
                     }`}
                   >
-                    <Icon className={`w-4 h-4 ${active ? 'text-eco-emerald' : 'text-eco-sage'}`} />
-                    {link.name}
+                    <Icon className={`w-4 h-4 ${active ? 'text-eco-forest' : 'text-eco-sage'}`} />
+                    <span>{link.name}</span>
+                    {active && (
+                      <span className="absolute bottom-0 left-3 right-3 h-0.5 bg-eco-forest rounded-full" />
+                    )}
                   </Link>
                 );
               })}
@@ -103,12 +109,20 @@ export const Navbar: React.FC = () => {
                 </Link>
               </div>
             ) : (
-              <Link
-                to="/dashboard"
-                className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-eco-forest text-white text-sm font-medium hover:bg-eco-forest-hover transition-colors focus:outline-none focus:ring-2 focus:ring-eco-forest focus:ring-offset-2"
-              >
-                Sign In
-              </Link>
+              <div className="flex items-center gap-2">
+                <Link
+                  to="/dashboard"
+                  className="px-3.5 py-1.5 rounded-xl border border-eco-canvas-border text-eco-text font-medium text-xs hover:bg-eco-canvas transition-colors"
+                >
+                  Log In
+                </Link>
+                <Link
+                  to="/quiz"
+                  className="px-3.5 py-1.5 rounded-xl bg-eco-forest text-white font-medium text-xs hover:bg-eco-forest-hover transition-colors shadow-eco-sm"
+                >
+                  Sign Up
+                </Link>
+              </div>
             )}
           </div>
 

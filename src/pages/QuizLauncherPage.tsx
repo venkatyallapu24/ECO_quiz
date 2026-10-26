@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { PlayCircle, Clock, BookOpen, Check } from 'lucide-react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import { PlayCircle, Clock, BookOpen, Check, ArrowRight } from 'lucide-react';
 import { QuizMode, Difficulty } from '@/types';
 import { Button } from '@/components/ui/Button';
 
 export const QuizLauncherPage: React.FC = () => {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const categoryParam = searchParams.get('category');
   const modeParam = searchParams.get('mode') as QuizMode | null;
@@ -41,36 +42,36 @@ export const QuizLauncherPage: React.FC = () => {
   }, [categoryParam, modeParam, difficultyParam]);
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
+    <div className="max-w-4xl mx-auto space-y-8 py-2 animate-fadeIn">
       <div>
-        <h1 className="text-3xl font-extrabold text-eco-forest">Start an Eco Quiz</h1>
-        <p className="text-sm text-gray-600 mt-1">
-          Select a category, mode, and difficulty to begin your 10-question session.
+        <h1 className="text-3xl font-extrabold text-eco-forest tracking-tight">Start an Eco Quiz</h1>
+        <p className="text-sm text-eco-text-muted mt-1">
+          Select a category, mode, and difficulty to begin your 10-question evaluation session.
         </p>
       </div>
 
       {/* Mode Selection */}
-      <div className="bg-white p-6 rounded-2xl border border-eco-canvas-subtle shadow-sm space-y-4">
-        <h2 className="text-base font-bold text-gray-900">1. Select Mode</h2>
+      <div className="bg-white p-6 rounded-2xl border border-eco-canvas-border shadow-eco-sm space-y-4">
+        <h2 className="text-base font-bold text-eco-text">1. Select Mode</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <button
             type="button"
             onClick={() => setMode('practice')}
             className={`p-5 rounded-xl border text-left transition-all ${
               mode === 'practice'
-                ? 'border-eco-emerald bg-emerald-50/40 ring-2 ring-eco-emerald/20'
-                : 'border-gray-200 hover:border-gray-300'
+                ? 'border-eco-forest bg-eco-sage-light text-eco-forest ring-2 ring-eco-forest/20 shadow-eco-sm'
+                : 'border-eco-canvas-border bg-white hover:border-eco-sage hover:bg-eco-canvas-subtle/40 text-eco-text'
             }`}
           >
             <div className="flex items-center justify-between mb-2">
-              <span className="font-bold text-eco-forest flex items-center gap-2">
-                <BookOpen className="w-5 h-5 text-eco-emerald" />
+              <span className="font-bold flex items-center gap-2">
+                <BookOpen className="w-5 h-5 text-eco-forest" />
                 Practice Mode
               </span>
-              {mode === 'practice' && <Check className="w-4 h-4 text-eco-emerald" />}
+              {mode === 'practice' && <Check className="w-4 h-4 text-eco-forest stroke-[2.5]" />}
             </div>
-            <p className="text-xs text-gray-600">
-              Untimed exploration. Learn with immediate explanations. Ideal for study.
+            <p className="text-xs text-eco-text-muted">
+              Untimed exploration. Navigate back and forth freely. Ideal for coursework review.
             </p>
           </button>
 
@@ -79,27 +80,27 @@ export const QuizLauncherPage: React.FC = () => {
             onClick={() => setMode('timed')}
             className={`p-5 rounded-xl border text-left transition-all ${
               mode === 'timed'
-                ? 'border-eco-emerald bg-emerald-50/40 ring-2 ring-eco-emerald/20'
-                : 'border-gray-200 hover:border-gray-300'
+                ? 'border-eco-forest bg-eco-sage-light text-eco-forest ring-2 ring-eco-forest/20 shadow-eco-sm'
+                : 'border-eco-canvas-border bg-white hover:border-eco-sage hover:bg-eco-canvas-subtle/40 text-eco-text'
             }`}
           >
             <div className="flex items-center justify-between mb-2">
-              <span className="font-bold text-eco-forest flex items-center gap-2">
+              <span className="font-bold flex items-center gap-2">
                 <Clock className="w-5 h-5 text-amber-600" />
                 Timed Mode (25s / Q)
               </span>
-              {mode === 'timed' && <Check className="w-4 h-4 text-eco-emerald" />}
+              {mode === 'timed' && <Check className="w-4 h-4 text-eco-forest stroke-[2.5]" />}
             </div>
-            <p className="text-xs text-gray-600">
-              Competitive 25s timer per question with speed bonus XP.
+            <p className="text-xs text-eco-text-muted">
+              Competitive 25s per question with a 15-second grace window and speed bonus XP.
             </p>
           </button>
         </div>
       </div>
 
       {/* Difficulty Selection */}
-      <div className="bg-white p-6 rounded-2xl border border-eco-canvas-subtle shadow-sm space-y-4">
-        <h2 className="text-base font-bold text-gray-900">2. Select Difficulty</h2>
+      <div className="bg-white p-6 rounded-2xl border border-eco-canvas-border shadow-eco-sm space-y-4">
+        <h2 className="text-base font-bold text-eco-text">2. Select Difficulty</h2>
         <div className="grid grid-cols-3 gap-3">
           {(['easy', 'medium', 'hard'] as Difficulty[]).map((d) => (
             <button
@@ -108,8 +109,8 @@ export const QuizLauncherPage: React.FC = () => {
               onClick={() => setDifficulty(d)}
               className={`p-3 rounded-xl border text-center capitalize text-sm font-semibold transition-all ${
                 difficulty === d
-                  ? 'border-eco-emerald bg-emerald-50 text-eco-forest ring-2 ring-eco-emerald/20'
-                  : 'border-gray-200 hover:border-gray-300 text-gray-600'
+                  ? 'border-eco-forest bg-eco-sage-light text-eco-forest ring-2 ring-eco-forest/20 shadow-eco-sm'
+                  : 'border-eco-canvas-border bg-white hover:border-eco-sage hover:bg-eco-canvas-subtle/40 text-eco-text-muted'
               }`}
             >
               {d}
@@ -119,8 +120,8 @@ export const QuizLauncherPage: React.FC = () => {
       </div>
 
       {/* Category Selection */}
-      <div className="bg-white p-6 rounded-2xl border border-eco-canvas-subtle shadow-sm space-y-4">
-        <h2 className="text-base font-bold text-gray-900">3. Select Category</h2>
+      <div className="bg-white p-6 rounded-2xl border border-eco-canvas-border shadow-eco-sm space-y-4">
+        <h2 className="text-base font-bold text-eco-text">3. Select Category</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {categories.map((cat) => (
             <button
@@ -129,30 +130,32 @@ export const QuizLauncherPage: React.FC = () => {
               onClick={() => setSelectedCategory(cat.id)}
               className={`p-4 rounded-xl border text-left flex items-center justify-between transition-all ${
                 selectedCategory === cat.id
-                  ? 'border-eco-emerald bg-emerald-50/40 font-semibold text-eco-forest'
-                  : 'border-gray-200 hover:border-gray-300 text-gray-700'
+                  ? 'border-eco-forest bg-eco-sage-light text-eco-forest font-semibold ring-2 ring-eco-forest/20 shadow-eco-sm'
+                  : 'border-eco-canvas-border bg-white hover:border-eco-sage hover:bg-eco-canvas-subtle/40 text-eco-text'
               }`}
             >
               <div className="flex items-center gap-3">
                 <span className="text-2xl">{cat.icon}</span>
                 <div>
                   <div className="text-sm font-semibold">{cat.name}</div>
-                  <div className="text-xs text-gray-500">{cat.questionsCount} questions</div>
+                  <div className="text-xs text-eco-text-muted">{cat.questionsCount} questions available</div>
                 </div>
               </div>
-              {selectedCategory === cat.id && <Check className="w-4 h-4 text-eco-emerald" />}
+              {selectedCategory === cat.id && <Check className="w-4 h-4 text-eco-forest stroke-[2.5]" />}
             </button>
           ))}
         </div>
       </div>
 
       {/* Launch CTA */}
-      <div className="flex justify-end">
+      <div className="flex justify-end pt-2">
         <Button
           variant="primary"
           size="lg"
+          className="rounded-full px-8 py-3.5 bg-eco-forest hover:bg-eco-forest-hover text-white shadow-eco-md flex items-center gap-2 group font-bold"
           leftIcon={<PlayCircle className="w-5 h-5 text-eco-lime" />}
-          onClick={() => alert(`Launching ${mode} quiz for ${selectedCategory} (${difficulty})! Stage 6 Quiz Engine will handle active execution.`)}
+          rightIcon={<ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />}
+          onClick={() => navigate(`/quiz/play?category=${selectedCategory}&mode=${mode}&difficulty=${difficulty}`)}
         >
           Start Session (10 Questions)
         </Button>

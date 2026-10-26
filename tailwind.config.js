@@ -6,10 +6,10 @@ export default {
       colors: {
         eco: {
           forest: {
-            DEFAULT: '#14382B',
-            deep: '#0B241B',
-            light: '#1F5240',
-            hover: '#194535',
+            DEFAULT: '#176B3A',
+            deep: '#0F4726',
+            light: '#23894C',
+            hover: '#135830',
           },
           sage: {
             DEFAULT: '#5F8274',
@@ -28,9 +28,9 @@ export default {
             dark: '#65A30D',
           },
           canvas: {
-            DEFAULT: '#FAFBF8',
-            subtle: '#F1F4EE',
-            border: '#E2E8DE',
+            DEFAULT: '#F7F8F3',
+            subtle: '#EEF0E8',
+            border: '#E2E6DC',
             dark: '#0C1C16',
           },
           text: {
