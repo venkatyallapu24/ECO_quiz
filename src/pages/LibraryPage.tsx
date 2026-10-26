@@ -1,5 +1,8 @@
 import React from 'react';
-import { Clock, ExternalLink } from 'lucide-react';
+import { Clock, ExternalLink, BookOpen } from 'lucide-react';
+import { Badge } from '@/components/ui/Badge';
+import { Button } from '@/components/ui/Button';
+import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/Card';
 
 export const LibraryPage: React.FC = () => {
   const articles = [
@@ -9,15 +12,15 @@ export const LibraryPage: React.FC = () => {
       category: 'Climate Change',
       readTime: '4 min',
       citation: 'Scripps Institution of Oceanography & NOAA',
-      snippet: 'How continuous monitoring at Mauna Loa confirmed the relentless rise in atmospheric carbon dioxide since 1958.',
+      snippet: 'How continuous atmospheric monitoring at Mauna Loa confirmed the relentless rise in greenhouse gases since 1958.',
     },
     {
       id: 'a2',
-      title: 'Keystone Species: Why Apex Predators Anchor Whole Ecosystems',
+      title: 'Trophic Cascades: Why Apex Predators Anchor Whole Ecosystems',
       category: 'Biodiversity',
       readTime: '5 min',
       citation: 'IUCN World Conservation Congress',
-      snippet: 'Exploring trophic cascades through the reintroduction of gray wolves to Yellowstone National Park.',
+      snippet: 'Exploring how reintroducing apex predators restores riverbanks, vegetation, and biodiversity across vast landscapes.',
     },
     {
       id: 'a3',
@@ -25,54 +28,58 @@ export const LibraryPage: React.FC = () => {
       category: 'Renewable Energy',
       readTime: '6 min',
       citation: 'International Renewable Energy Agency (IRENA)',
-      snippet: 'Why utility-scale solar PV has become the cheapest source of bulk electricity in history.',
+      snippet: 'Why utility-scale solar PV has become the cheapest bulk electricity source in history and how storage bridges the duck curve.',
     },
   ];
 
   return (
     <div className="max-w-5xl mx-auto space-y-8">
       <div>
-        <h1 className="text-3xl font-extrabold text-eco-forest">Learning Library</h1>
-        <p className="text-sm text-gray-600 mt-1">
-          Peer-reviewed articles, scientific explainers, and real-world environmental case studies.
+        <div className="inline-flex items-center gap-2 mb-2">
+          <Badge variant="sage" size="sm">
+            <BookOpen className="w-3.5 h-3.5 text-eco-emerald" />
+            Peer-Reviewed Explainers
+          </Badge>
+        </div>
+        <h1 className="text-3xl font-extrabold text-eco-forest">Environmental Learning Library</h1>
+        <p className="text-sm text-eco-text-muted mt-1 max-w-xl">
+          Scientific summaries, environmental case studies, and credible resources for student research and course support.
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {articles.map((art) => (
-          <article
-            key={art.id}
-            className="bg-white p-6 rounded-2xl border border-eco-canvas-subtle shadow-sm flex flex-col justify-between hover:border-eco-emerald/40 transition-colors"
-          >
+          <Card key={art.id} variant="interactive" className="flex flex-col justify-between">
             <div>
-              <div className="flex items-center justify-between text-xs text-eco-emerald font-semibold mb-3">
-                <span>{art.category}</span>
-                <span className="flex items-center gap-1 text-gray-400">
-                  <Clock className="w-3.5 h-3.5" />
-                  {art.readTime}
-                </span>
-              </div>
-              <h2 className="text-base font-bold text-gray-900 mb-2 leading-snug">
-                {art.title}
-              </h2>
-              <p className="text-xs text-gray-600 mb-4 line-clamp-3">
+              <CardHeader className="mb-2">
+                <div className="flex items-center justify-between text-xs text-eco-emerald font-semibold mb-2">
+                  <Badge variant="sage" size="sm">{art.category}</Badge>
+                  <span className="flex items-center gap-1 text-eco-text-light font-normal">
+                    <Clock className="w-3 h-3" />
+                    {art.readTime}
+                  </span>
+                </div>
+                <CardTitle className="leading-snug text-base">{art.title}</CardTitle>
+              </CardHeader>
+              <CardDescription className="line-clamp-3 text-xs">
                 {art.snippet}
-              </p>
+              </CardDescription>
             </div>
 
-            <div className="pt-4 border-t border-gray-100 flex items-center justify-between">
-              <span className="text-[11px] text-gray-400 truncate max-w-[180px]">
+            <CardFooter className="flex items-center justify-between">
+              <span className="text-[11px] text-eco-text-light truncate max-w-[160px]" title={art.citation}>
                 {art.citation}
               </span>
-              <button
-                type="button"
-                className="text-eco-emerald hover:text-eco-emerald-dark text-xs font-semibold flex items-center gap-1"
-                onClick={() => alert(`Article details scheduled for Stage 10.`)}
+              <Button
+                variant="ghost"
+                size="sm"
+                rightIcon={<ExternalLink className="w-3 h-3 text-eco-emerald" />}
+                onClick={() => alert(`Full article view scheduled for Stage 10.`)}
               >
-                Read <ExternalLink className="w-3 h-3" />
-              </button>
-            </div>
-          </article>
+                Read
+              </Button>
+            </CardFooter>
+          </Card>
         ))}
       </div>
     </div>

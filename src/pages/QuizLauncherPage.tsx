@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { PlayCircle, Clock, BookOpen, Check } from 'lucide-react';
 import { QuizMode, Difficulty } from '@/types';
+import { Button } from '@/components/ui/Button';
 
 export const QuizLauncherPage: React.FC = () => {
-  const [selectedCategory, setSelectedCategory] = useState('climate');
-  const [mode, setMode] = useState<QuizMode>('practice');
-  const [difficulty, setDifficulty] = useState<Difficulty>('medium');
+  const [searchParams] = useSearchParams();
+  const categoryParam = searchParams.get('category');
+  const modeParam = searchParams.get('mode') as QuizMode | null;
+  const difficultyParam = searchParams.get('difficulty') as Difficulty | null;
 
   const categories = [
     { id: 'climate', name: 'Climate Change & Atmosphere', questionsCount: 45, icon: '🌍' },
@@ -16,6 +19,26 @@ export const QuizLauncherPage: React.FC = () => {
     { id: 'food', name: 'Sustainable Agriculture', questionsCount: 25, icon: '🌾' },
     { id: 'cities', name: 'Green Cities & Transport', questionsCount: 22, icon: '🏙️' },
   ];
+
+  const initialCat = categoryParam && categories.some((c) => c.id === categoryParam) ? categoryParam : 'climate';
+  const initialMode = modeParam === 'timed' || modeParam === 'practice' ? modeParam : 'practice';
+  const initialDiff = difficultyParam === 'easy' || difficultyParam === 'medium' || difficultyParam === 'hard' ? difficultyParam : 'medium';
+
+  const [selectedCategory, setSelectedCategory] = useState(initialCat);
+  const [mode, setMode] = useState<QuizMode>(initialMode);
+  const [difficulty, setDifficulty] = useState<Difficulty>(initialDiff);
+
+  useEffect(() => {
+    if (categoryParam && categories.some((c) => c.id === categoryParam)) {
+      setSelectedCategory(categoryParam);
+    }
+    if (modeParam === 'timed' || modeParam === 'practice') {
+      setMode(modeParam);
+    }
+    if (difficultyParam === 'easy' || difficultyParam === 'medium' || difficultyParam === 'hard') {
+      setDifficulty(difficultyParam);
+    }
+  }, [categoryParam, modeParam, difficultyParam]);
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
@@ -125,14 +148,14 @@ export const QuizLauncherPage: React.FC = () => {
 
       {/* Launch CTA */}
       <div className="flex justify-end">
-        <button
-          type="button"
+        <Button
+          variant="primary"
+          size="lg"
+          leftIcon={<PlayCircle className="w-5 h-5 text-eco-lime" />}
           onClick={() => alert(`Launching ${mode} quiz for ${selectedCategory} (${difficulty})! Stage 6 Quiz Engine will handle active execution.`)}
-          className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-eco-forest text-white font-bold text-base hover:bg-eco-forest-light transition-colors shadow-sm"
         >
-          <PlayCircle className="w-5 h-5 text-eco-lime" />
           Start Session (10 Questions)
-        </button>
+        </Button>
       </div>
     </div>
   );

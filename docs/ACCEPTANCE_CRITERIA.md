@@ -53,10 +53,10 @@ Criteria must be marked only as:
 
 | # | Criterion | Status | Evidence / Verification Method |
 |---|---|---|---|
-| 3.1 | Environmental design tokens implemented (forest green, emerald, lime) | **NOT RUN** | Future stage |
-| 3.2 | Core reusable components built (buttons, cards, badges, dialogs, inputs) | **NOT RUN** | Future stage |
-| 3.3 | Responsive layouts validated across mobile, tablet, and desktop | **NOT RUN** | Future stage |
-| 3.4 | Accessibility requirements (WCAG contrast, focus rings, ARIA) verified | **NOT RUN** | Future stage |
+| 3.1 | Environmental design tokens implemented (forest green, soft sage, emerald, canvas) | **PASS** | College campus sustainability palette defined in `tailwind.config.js` and `src/index.css` |
+| 3.2 | Core reusable components built (Button, Card, Badge, ProgressBar, LevelBadge, StreakIndicator, Dialog, Alert, EmptyState, LoadingState, QuestionCard, AnswerOption) | **PASS** | 12 typed components implemented in `src/components/`, verified via 17 Vitest tests |
+| 3.3 | Responsive layouts validated across mobile, tablet, and desktop | **PASS** | Responsive grid systems, mobile navigation drawer, and breakpoint-tested layouts |
+| 3.4 | Accessibility requirements (ARIA roles, focus rings, keyboard navigation) verified | **PASS** | Full focus outlines, `role="progressbar"`, `role="dialog"`, `role="radio"`, and `role="alert"` verified |
 
 ---
 
@@ -64,10 +64,10 @@ Criteria must be marked only as:
 
 | # | Criterion | Status | Evidence / Verification Method |
 |---|---|---|---|
-| 4.1 | Hero section, value proposition, and call-to-action functional | **NOT RUN** | Future stage |
-| 4.2 | Category showcases and gamification previews implemented | **NOT RUN** | Future stage |
-| 4.3 | No non-functional buttons or fake statistics present | **NOT RUN** | Future stage |
-| 4.4 | Responsive layout and production build pass | **NOT RUN** | Future stage |
+| 4.1 | Hero section, value proposition, and call-to-action functional | **PASS** | Hero headline, value proposition, Primary CTA (`/quiz`), Secondary CTA (`/library`), and trust badges verified in `src/test/LandingPage.test.tsx` |
+| 4.2 | Category showcases and gamification previews implemented | **PASS** | All 7 categories rendered with citations and question counts; topic search with `EmptyState` fallback; format demonstration question card with explanation preview verified |
+| 4.3 | No non-functional buttons or fake statistics present | **PASS** | Every button and link routes to active destinations; quick launcher synchronizes with `QuizLauncherPage` query parameters; demo previews explicitly labeled |
+| 4.4 | Responsive layout and production build pass | **PASS** | Mobile navigation with `Escape` key and ARIA landmarks; `npm run typecheck` (0 errors), `npm run test` (25/25 passed), `npm run build` passed in 721ms |
 
 ---
 

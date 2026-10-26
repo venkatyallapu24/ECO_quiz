@@ -1,5 +1,8 @@
 import React from 'react';
 import { Trophy, Shield } from 'lucide-react';
+import { LevelBadge } from '@/components/ui/LevelBadge';
+import { Badge } from '@/components/ui/Badge';
+import { Card } from '@/components/ui/Card';
 
 export const LeaderboardPage: React.FC = () => {
   const leaders = [
@@ -14,66 +17,69 @@ export const LeaderboardPage: React.FC = () => {
     <div className="max-w-4xl mx-auto space-y-8">
       <div>
         <h1 className="text-3xl font-extrabold text-eco-forest">Community Leaderboard</h1>
-        <p className="text-sm text-gray-600 mt-1">
-          Weekly global rankings based on verified, server-scored quiz performance.
+        <p className="text-sm text-eco-text-muted mt-1">
+          Weekly student rankings based on verified, server-scored environmental quiz performance.
         </p>
       </div>
 
-      <div className="bg-white rounded-2xl border border-eco-canvas-subtle shadow-sm overflow-hidden">
-        <div className="p-4 sm:p-6 border-b border-gray-100 flex items-center justify-between">
-          <div className="flex items-center gap-2 font-bold text-gray-900 text-sm">
+      <Card className="p-0 overflow-hidden">
+        <div className="p-4 sm:p-6 border-b border-eco-canvas-border flex items-center justify-between bg-eco-canvas-subtle/50">
+          <div className="flex items-center gap-2 font-bold text-eco-text text-sm">
             <Trophy className="w-5 h-5 text-amber-500" />
-            Top Planetary Advocates
+            Weekly Campus Leaders
           </div>
-          <div className="text-xs text-gray-500 flex items-center gap-1">
+          <div className="text-xs text-eco-text-muted flex items-center gap-1.5 font-medium">
             <Shield className="w-3.5 h-3.5 text-eco-emerald" />
-            Opt-out privacy supported in Settings
+            Opt-in privacy supported in Settings
           </div>
         </div>
 
-        <div className="divide-y divide-gray-100">
+        <div className="divide-y divide-eco-canvas-border">
           {leaders.map((leader) => (
             <div
               key={leader.rank}
-              className={`p-4 sm:px-6 flex items-center justify-between ${
-                leader.isCurrentUser ? 'bg-emerald-50/60 font-semibold' : ''
+              className={`p-4 sm:px-6 flex items-center justify-between transition-colors ${
+                leader.isCurrentUser ? 'bg-eco-sage-light/40 font-semibold' : 'hover:bg-eco-canvas-subtle/30'
               }`}
             >
               <div className="flex items-center gap-4">
                 <span
                   className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${
                     leader.rank === 1
-                      ? 'bg-amber-100 text-amber-700'
+                      ? 'bg-amber-100 text-amber-800'
                       : leader.rank === 2
-                      ? 'bg-gray-100 text-gray-700'
+                      ? 'bg-slate-200 text-slate-800'
                       : leader.rank === 3
-                      ? 'bg-orange-100 text-orange-700'
-                      : 'text-gray-400'
+                      ? 'bg-amber-50 text-amber-900 border border-amber-200'
+                      : 'text-eco-text-light font-medium'
                   }`}
                 >
                   #{leader.rank}
                 </span>
                 <div>
-                  <div className="text-sm font-semibold text-gray-900 flex items-center gap-2">
+                  <div className="text-sm font-semibold text-eco-text flex items-center gap-2">
                     {leader.name}
                     {leader.isCurrentUser && (
-                      <span className="text-[10px] bg-eco-emerald text-white px-2 py-0.5 rounded-full font-bold">
+                      <Badge variant="forest" size="sm">
                         YOU
-                      </span>
+                      </Badge>
                     )}
                   </div>
-                  <div className="text-xs text-gray-500">Level {leader.level} • {leader.streak}d streak</div>
+                  <div className="text-xs text-eco-text-muted flex items-center gap-2 mt-0.5">
+                    <LevelBadge level={leader.level} size="sm" />
+                    <span>• {leader.streak}d streak</span>
+                  </div>
                 </div>
               </div>
 
               <div className="text-right">
-                <div className="text-sm font-bold text-eco-emerald">{leader.xp} XP</div>
-                <div className="text-[10px] text-gray-400">Total Scored</div>
+                <div className="text-sm font-bold text-eco-emerald tabular-nums">{leader.xp} XP</div>
+                <div className="text-[10px] text-eco-text-light uppercase tracking-wider font-semibold">Weekly Scored</div>
               </div>
             </div>
           ))}
         </div>
-      </div>
+      </Card>
     </div>
   );
 };
