@@ -35,6 +35,7 @@
   6. `eeb0868` ("feat(quiz,ui): implement Stage 6 environmental quiz engine and campus UI visual alignment")
   7. `01b74d3` ("feat(gamification): implement Stage 7 gamification engine, XP matrix, timezone streaks, and badges")
   8. `5b7be1d` ("docs: record commit 01b74d3 in PROJECT_STATUS.md")
+  9. `e340c78` ("feat(challenges,leaderboard): implement Stage 8 communal challenges and deterministic leaderboards")
 - **Current Branch**: `main`
 - **Configured Remote**: None configured locally. Remote target identified as `https://github.com/venkatyallapu24/ECO_quiz.git` (HTTP 200 reachable), pending authorization to attach.
 
