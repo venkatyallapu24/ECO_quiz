@@ -39,6 +39,7 @@
   10. `5f6a814` ("docs: record commit e340c78 in PROJECT_STATUS.md")
   11. `1bdfb07` ("feat(supabase): implement Stage 9 SQL migrations, RLS policies, trusted RPCs, and auth client")
   12. `96d97cf` ("docs: record commit 1bdfb07 in PROJECT_STATUS.md")
+  13. `c4f254f` ("fix(security): resolve Stage 9.1 audit findings with hardened migrations, RPCs, and least privilege")
 - **Current Branch**: `main`
 - **Configured Remote**: None configured locally. Remote target identified as `https://github.com/venkatyallapu24/ECO_quiz.git` (HTTP 200 reachable), pending authorization to attach.
 
