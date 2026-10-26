@@ -75,10 +75,10 @@ Criteria must be marked only as:
 
 | # | Criterion | Status | Evidence / Verification Method |
 |---|---|---|---|
-| 5.1 | User profile header, level badge, and XP progress bar displayed | **NOT RUN** | Future stage |
-| 5.2 | Streak indicator and 3 daily missions rendered | **NOT RUN** | Future stage |
-| 5.3 | Quick quiz launcher and category progress functional | **NOT RUN** | Future stage |
-| 5.4 | Authenticated and unauthenticated routing handled gracefully | **NOT RUN** | Future stage |
+| 5.1 | User profile header, level badge, and XP progress bar displayed | **PASS** | Greeting, LevelBadge, StreakIndicator, and canonical XP math (`getLevelProgress`) verified in `src/test/DashboardPage.test.tsx` and `src/test/Progression.test.ts` |
+| 5.2 | Streak indicator and 3 daily missions rendered | **PASS** | 3 canonical missions rendered with non-color-only status badges, +50 XP All-Clear bonus, and 00:00 UTC countdown badge (`getTimeUntilUtcMidnight`) |
+| 5.3 | Quick quiz launcher and category progress functional | **PASS** | Primary CTA (`/quiz`), recommendations, and recent activity retake links route to valid quiz categories with mode params |
+| 5.4 | Authenticated and unauthenticated routing handled gracefully | **PASS** | First-time / empty state toggling verified with clean `EmptyState` component; development fixture notice clearly distinguishes preview data from server persistence |
 
 ---
 
