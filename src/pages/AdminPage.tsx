@@ -326,10 +326,10 @@ export const AdminPage: React.FC = () => {
     };
 
     if (selectedArticle) {
-      articleService.updateArticle(selectedArticle.id, articlePayload);
+      articleService.updateArticle(selectedArticle.id, articlePayload, user);
       showNotification('success', `Article "${articlePayload.title}" updated successfully.`);
     } else {
-      articleService.createArticle(articlePayload);
+      articleService.createArticle(articlePayload, user);
       showNotification('success', `Article "${articlePayload.title}" created successfully.`);
     }
 
@@ -339,7 +339,7 @@ export const AdminPage: React.FC = () => {
   // Delete Article
   const handleConfirmDeleteArticle = () => {
     if (!articleToDelete) return;
-    articleService.deleteArticle(articleToDelete.id);
+    articleService.deleteArticle(articleToDelete.id, user);
     showNotification('success', `Article "${articleToDelete.title}" deleted.`);
     setArticleToDelete(null);
   };

@@ -7,13 +7,16 @@ describe('Stage 9 — Supabase Authentication, Database & Trusted Operations Ver
   const migrationsDir = path.resolve(__dirname, '../../supabase/migrations');
 
   describe('9.1 Migration Artifacts & Relational Schema Integrity', () => {
-    it('verifies all 5 versioned SQL migration files exist in supabase/migrations/', () => {
+    it('verifies all 8 versioned SQL migration files exist in supabase/migrations/', () => {
       const files = fs.readdirSync(migrationsDir);
       expect(files).toContain('20261027000001_initial_schema.sql');
       expect(files).toContain('20261027000002_row_level_security.sql');
       expect(files).toContain('20261027000003_trusted_quiz_rpc.sql');
       expect(files).toContain('20261027000004_trusted_gamification_rpc.sql');
       expect(files).toContain('20261027000005_seed_data.sql');
+      expect(files).toContain('20261027000006_security_hardening.sql');
+      expect(files).toContain('20261027000007_content_library_and_admin.sql');
+      expect(files).toContain('20261027000008_admin_authorization_and_qa_fixes.sql');
     });
 
     it('verifies initial schema contains all approved tables with foreign keys and unique constraints', () => {
@@ -190,10 +193,14 @@ describe('Stage 9 — Supabase Authentication, Database & Trusted Operations Ver
       expect(res.user).toBeNull();
     });
 
-    it('gracefully handles joinChallenge, claimChallengeReward, and getLeaderboard when unconfigured', async () => {
+    it('gracefully handles joinChallenge, leaveChallenge, claimChallengeReward, and getLeaderboard when unconfigured', async () => {
       const joinRes = await supabaseQuizRpcService.joinChallenge('ch-communal-1');
       expect(joinRes.success).toBe(false);
       expect(joinRes.error).toMatch(/Backend unconfigured/);
+
+      const leaveRes = await supabaseQuizRpcService.leaveChallenge('ch-communal-1');
+      expect(leaveRes.success).toBe(false);
+      expect(leaveRes.error).toMatch(/Backend unconfigured/);
 
       const claimRes = await supabaseQuizRpcService.claimChallengeReward('ch-communal-1');
       expect(claimRes.success).toBe(false);
@@ -316,6 +323,64 @@ describe('Stage 9 — Supabase Authentication, Database & Trusted Operations Ver
       expect(hardeningSql).toMatch(/is below target goal/);
       expect(hardeningSql).toMatch(/UPDATE public\.user_challenges\s+SET is_completed = true,\s+reward_claimed = true/m);
       expect(hardeningSql).toMatch(/INSERT INTO public\.xp_ledger[\s\S]*'challenge_reward'/);
+    });
+  });
+
+  describe('9.7 Migration 8 Admin Authorization, Full Question Seeding & QA Fixes', () => {
+    const migration8Sql = fs.readFileSync(
+      path.join(migrationsDir, '20261027000008_admin_authorization_and_qa_fixes.sql'),
+      'utf8'
+    );
+
+    it('ensures cities category exists and is seeded with correct order_index', () => {
+      expect(migration8Sql).toMatch(/INSERT INTO public\.categories[\s\S]*'cities'/);
+      expect(migration8Sql).toMatch(/'Green Cities & Transport'/);
+    });
+
+    it('seeds all 21 verified questions with valid UUIDs across domains', () => {
+      expect(migration8Sql).toMatch(/c0000000-0000-0000-0000-000000000001/);
+      expect(migration8Sql).toMatch(/c0000000-0000-0000-0000-000000000021/);
+      expect(migration8Sql).toMatch(/'cities', 'medium'/);
+      expect(migration8Sql).toMatch(/Shockley-Queisser/);
+      expect(migration8Sql).toMatch(/The Duck Curve/);
+      expect(migration8Sql).toMatch(/Kunming-Montreal Global Biodiversity Framework/);
+    });
+
+    it('hardens Admins can manage questions with explicit USING and WITH CHECK clauses', () => {
+      expect(migration8Sql).toMatch(/DROP POLICY IF EXISTS "Admins can manage questions" ON public\.questions;/);
+      expect(migration8Sql).toMatch(/CREATE POLICY "Admins can manage questions"[\s\S]*FOR ALL[\s\S]*USING \([\s\S]*role = 'admin'[\s\S]*\)[\s\S]*WITH CHECK \([\s\S]*role = 'admin'[\s\S]*\);/);
+    });
+
+    it('grants table-level permissions to authenticated role and revokes from anon', () => {
+      expect(migration8Sql).toMatch(/GRANT SELECT, INSERT, UPDATE, DELETE ON public\.questions TO authenticated;/);
+      expect(migration8Sql).toMatch(/GRANT INSERT, UPDATE, DELETE ON public\.articles TO authenticated;/);
+      expect(migration8Sql).toMatch(/REVOKE INSERT, UPDATE, DELETE ON public\.questions FROM anon;/);
+      expect(migration8Sql).toMatch(/REVOKE INSERT, UPDATE, DELETE ON public\.articles FROM anon;/);
+      expect(migration8Sql).toMatch(/REVOKE SELECT ON public\.questions FROM anon;/);
+    });
+
+    it('enforces admin_manage_question RPC with strict admin authorization check', () => {
+      expect(migration8Sql).toMatch(/CREATE OR REPLACE FUNCTION public\.admin_manage_question/);
+      expect(migration8Sql).toMatch(/SET search_path = public, pg_temp/);
+      expect(migration8Sql).toMatch(/WHERE id = v_user_id AND role = 'admin'/);
+      expect(migration8Sql).toMatch(/Unauthorized: Administrator authorization required to manage curriculum questions/);
+      expect(migration8Sql).toMatch(/REVOKE ALL ON FUNCTION public\.admin_manage_question[\s\S]*FROM PUBLIC;/);
+      expect(migration8Sql).toMatch(/GRANT EXECUTE ON FUNCTION public\.admin_manage_question[\s\S]*TO authenticated;/);
+    });
+
+    it('implements leave_challenge RPC with authenticated participation check', () => {
+      expect(migration8Sql).toMatch(/CREATE OR REPLACE FUNCTION public\.leave_challenge\(p_challenge_id TEXT\)/);
+      expect(migration8Sql).toMatch(/SET search_path = public, pg_temp/);
+      expect(migration8Sql).toMatch(/UPDATE public\.user_challenges[\s\S]*SET is_joined = false/);
+      expect(migration8Sql).toMatch(/REVOKE ALL ON FUNCTION public\.leave_challenge\(TEXT\) FROM PUBLIC;/);
+      expect(migration8Sql).toMatch(/GRANT EXECUTE ON FUNCTION public\.leave_challenge\(TEXT\) TO authenticated;/);
+    });
+
+    it('updates start_quiz_attempt with resilient fallback question pooling', () => {
+      expect(migration8Sql).toMatch(/CREATE OR REPLACE FUNCTION public\.start_quiz_attempt/);
+      expect(migration8Sql).toMatch(/priority/);
+      expect(migration8Sql).toMatch(/ORDER BY priority ASC, random\(\)/);
+      expect(migration8Sql).toMatch(/Insufficient questions in verified curriculum database/);
     });
   });
 });

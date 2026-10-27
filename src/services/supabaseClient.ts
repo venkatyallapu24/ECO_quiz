@@ -288,6 +288,28 @@ export class SupabaseQuizRpcService {
   }
 
   /**
+   * Calls PostgreSQL SECURITY DEFINER RPC public.leave_challenge
+   */
+  public async leaveChallenge(challengeId: string): Promise<{ success: boolean; error?: string }> {
+    if (!supabase) {
+      return {
+        success: false,
+        error: 'Backend unconfigured: leaving challenges requires Supabase credentials.',
+      };
+    }
+
+    const { data, error } = await supabase.rpc('leave_challenge', {
+      p_challenge_id: challengeId,
+    });
+
+    if (error) {
+      return { success: false, error: error.message };
+    }
+
+    return { success: data?.success ?? true };
+  }
+
+  /**
    * Calls PostgreSQL SECURITY DEFINER RPC public.claim_challenge_reward
    */
   public async claimChallengeReward(

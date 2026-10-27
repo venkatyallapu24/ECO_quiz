@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { UserProfile, UserProgression, DailyMission, Badge, GamificationRewardOutcome, Challenge, QuizAttemptHistoryItem } from '@/types';
 import { gamificationService, GamificationState, CANONICAL_BADGES } from '@/services/gamificationService';
 import { challengeService } from '@/services/challengeService';
@@ -101,6 +101,26 @@ export const AppProviders: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [quizHistory, setQuizHistory] = useState<QuizAttemptHistoryItem[]>(() => initialQuizHistory);
 
   const isBackendConnected = supabaseAuthService.isConfigured();
+
+  // Restore authenticated session when live backend is connected
+  useEffect(() => {
+    if (isBackendConnected) {
+      supabaseAuthService.getSession().then((session) => {
+        if (session?.user) {
+          setUser({
+            id: session.user.id,
+            username: session.user.email?.split('@')[0] || 'student',
+            displayName: session.user.user_metadata?.display_name || 'Student Learner',
+            avatarUrl: null,
+            role: 'user',
+            timezone: session.user.user_metadata?.timezone || 'UTC',
+            isPublicLeaderboard: true,
+            createdAt: session.user.created_at,
+          });
+        }
+      });
+    }
+  }, [isBackendConnected]);
 
   const updateProfile = (updates: { displayName?: string; avatarUrl?: string | null }): { success: boolean; error?: string } => {
     if (!user) {

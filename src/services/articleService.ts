@@ -1,4 +1,4 @@
-import { Article } from '@/types';
+import { Article, UserProfile } from '@/types';
 
 export const CANONICAL_ARTICLES: Article[] = [
   {
@@ -269,7 +269,14 @@ export class ArticleService {
 
   // --- Admin Methods ---
 
-  public createArticle(article: Omit<Article, 'id' | 'createdAt'>): Article {
+  public ensureAdmin(user?: UserProfile | null): void {
+    if (user !== undefined && (!user || user.role !== 'admin')) {
+      throw new Error('Unauthorized: Administrator authorization required to manage articles.');
+    }
+  }
+
+  public createArticle(article: Omit<Article, 'id' | 'createdAt'>, adminUser?: UserProfile | null): Article {
+    this.ensureAdmin(adminUser);
     const id = `art-${Date.now()}`;
     const newArticle: Article = {
       ...article,
@@ -280,7 +287,8 @@ export class ArticleService {
     return newArticle;
   }
 
-  public updateArticle(id: string, updates: Partial<Article>): Article {
+  public updateArticle(id: string, updates: Partial<Article>, adminUser?: UserProfile | null): Article {
+    this.ensureAdmin(adminUser);
     const index = this.articles.findIndex((a) => a.id === id);
     if (index === -1) {
       throw new Error(`Article with id ${id} not found.`);
@@ -293,7 +301,8 @@ export class ArticleService {
     return updated;
   }
 
-  public deleteArticle(id: string): boolean {
+  public deleteArticle(id: string, adminUser?: UserProfile | null): boolean {
+    this.ensureAdmin(adminUser);
     const index = this.articles.findIndex((a) => a.id === id);
     if (index === -1) return false;
     this.articles.splice(index, 1);

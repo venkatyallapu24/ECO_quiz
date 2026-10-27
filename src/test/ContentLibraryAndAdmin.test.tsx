@@ -420,6 +420,62 @@ describe('Stage 10: Content Library, Student Profiles & Administration', () => {
       expect(deleted).toBe(true);
     });
 
+    it('enforces role authorization on articleService admin operations', () => {
+      const studentUser: UserProfile = {
+        id: 'student-auth-test',
+        username: 'student',
+        displayName: 'Student User',
+        avatarUrl: null,
+        role: 'user',
+        timezone: 'UTC',
+        isPublicLeaderboard: true,
+        createdAt: '2026-10-25T00:00:00Z',
+      };
+
+      const adminUser: UserProfile = {
+        id: 'admin-auth-test',
+        username: 'admin',
+        displayName: 'Admin User',
+        avatarUrl: null,
+        role: 'admin',
+        timezone: 'UTC',
+        isPublicLeaderboard: true,
+        createdAt: '2026-10-20T00:00:00Z',
+      };
+
+      const sampleData = {
+        slug: 'auth-test-article',
+        title: 'Auth Test Article',
+        categoryId: 'climate',
+        categoryName: 'Climate & Atmosphere',
+        readTimeMinutes: 3,
+        summary: 'Test summary',
+        content: 'Test content',
+        sourceCitation: 'Test citation',
+        keyTakeaways: ['Takeaway 1'],
+        status: 'published' as const,
+        isVerifiedSource: true,
+      };
+
+      // Non-admin students are rejected with 403 / Unauthorized error
+      expect(() => articleService.createArticle(sampleData, studentUser)).toThrow(
+        /Unauthorized: Administrator authorization required/
+      );
+      expect(() => articleService.updateArticle('art-keeling-curve', { title: 'Hacked' }, studentUser)).toThrow(
+        /Unauthorized: Administrator authorization required/
+      );
+      expect(() => articleService.deleteArticle('art-keeling-curve', studentUser)).toThrow(
+        /Unauthorized: Administrator authorization required/
+      );
+
+      // Admins are authorized
+      const created = articleService.createArticle(sampleData, adminUser);
+      expect(created.id).toBeDefined();
+      const updated = articleService.updateArticle(created.id, { readTimeMinutes: 4 }, adminUser);
+      expect(updated.readTimeMinutes).toBe(4);
+      expect(articleService.deleteArticle(created.id, adminUser)).toBe(true);
+    });
+
     it('displays honest sandbox mode disclaimer in Admin portal', async () => {
       render(
         <MemoryRouter>

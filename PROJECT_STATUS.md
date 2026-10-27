@@ -1,10 +1,10 @@
 # EcoQuest — Project Status
 ## 1. Current Stage
 
-**Stage 10 — Content Library, Profiles, and Administration (Completed, Awaiting Review)**
-- Current Task ID: `ECO-STAGE-10-CONTENT-ADMIN`
-- Status: Stage 10 content library, student profiles, and administration completed. (1) Content Library: full learning library implemented with search across title/summary/takeaways/citations, category filtering across all 7 environmental domains, article reader modal with empirical source citations and key takeaways, and idempotent reading completion tracking integrated with mission `m3` ("Eco Scholar") and `eco_scholar` badge with zero duplicate XP. (2) Student Profiles: customizable pseudonym and avatar icon selection, view authoritative XP/level/streak/freezes/badges, quiz evaluation attempt history, learning library reading records, and leaderboard privacy toggle (`isPublicLeaderboard`). Server-owned fields (`role`, `xp`, `level`, `streak`) strictly protected from client manipulation. (3) Role-Protected Administration: `/admin` portal restricted to users with `role === 'admin'`; non-admin students receive accessible `403 Forbidden` response; curriculum question bank management with search, category/difficulty/status filters, CRUD operations, and strict validation (4 options, correct answer matching, >=15 char explanation, citation, takeaway); article management with draft/publish toggling. (4) Database Migration 7: `20261027000007_content_library_and_admin.sql` created with `public.articles` schema, foreign key to `categories`, RLS policies for public published reading and admin-only management, and seeded empirical articles. (5) Local sandbox fallback mode clearly disclosed across UI.
-- Progress: All 114 automated tests passing across 11 test suites (including 17 tests in `ContentLibraryAndAdmin.test.tsx`), TypeScript compilation clean (`tsc --noEmit`, 0 errors), production build verified (629.04 kB JS, 45.64 kB CSS in 1.01s). Awaiting independent review before Stage 11: Comprehensive QA and Security Review.
+**Stage 11 — Comprehensive QA & Security Review (Completed, Awaiting Review)**
+- Current Task ID: `ECO-STAGE-11-QA-SECURITY`
+- Status: Full application QA and security audit executed. (1) Critical Authorization Audit: Question and article management analyzed; confirmed in-memory / local state operation in dev mode; hardened PostgreSQL RLS policies in new migration `20261027000008_admin_authorization_and_qa_fixes.sql` with explicit `WITH CHECK` on questions table, granted authenticated table operations, revoked anon writes, and implemented trusted `admin_manage_question` RPC with strict server-side admin role validation; added client-level authorization checks to `articleService.createArticle`, `updateArticle`, `deleteArticle`. (2) Authentication & Session: Added session restoration `useEffect` in `AppProviders.tsx` on mount when `isBackendConnected` is true to maintain Supabase user state on page refresh. (3) Communal Challenges: Added trusted `leave_challenge` RPC in PostgreSQL and integrated client RPC in `supabaseClient.ts`. (4) Database Consistency: Inserted missing `'cities'` category into `public.categories`, seeded all 21 verified scientific questions with deterministic UUIDs, and updated `start_quiz_attempt` RPC with resilient question pooling so evaluation sessions never fail due to category scarcity. (5) Full QA Verification: 122 automated tests passing across 11 test suites, TypeScript clean (`tsc --noEmit`), production build clean (629.66 kB JS, 45.64 kB CSS in 1.01s).
+- Progress: Awaiting user review and authorization of Stage 11 before advancing to Stage 12: Production Readiness (`ECO-STAGE-12-PRODUCTION-READINESS`).
 
 ---
 
@@ -19,7 +19,7 @@
 - **Python Version**: `Python 3.9.6` (Operational)
 - **Node.js & npm**: Node.js LTS `v20.18.0`, npm `10.8.2`, npx `10.8.2`
 - **Optional Tools**: `gh` (not installed), `vercel` (not installed), `brew` (not installed)
-- **Browser Availability**: Safari (`/Applications/Safari.app`), Antigravity IDE browser available
+- **Browser Availability**: Safari (`/Applications/Safari.app`), Antigravity IDE browser available (Playwright driver download restricted by sandbox network)
 
 ---
 
@@ -42,6 +42,8 @@
   13. `c4f254f` ("fix(security): resolve Stage 9.1 audit findings with hardened migrations, RPCs, and least privilege")
   14. `be1d34e` ("docs: record commit c4f254f in PROJECT_STATUS.md")
   15. `65ad8b9` ("fix(security): resolve Stage 9.2 database consistency, direct query privacy, and challenge checks")
+  16. `154cfc6` ("docs: record commit 65ad8b9 in PROJECT_STATUS.md")
+  17. `e027ff6` ("feat(content,admin): implement Stage 10 content library, student profiles, and administration")
 - **Current Branch**: `main`
 - **Configured Remote**: None configured locally. Remote target identified as `https://github.com/venkatyallapu24/ECO_quiz.git` (HTTP 200 reachable), pending authorization to attach.
 
@@ -52,12 +54,12 @@
 All required project documentation files are established and tracked:
 
 1. `AGENTS.md` (Role, operational workflow, stage gates, security constraints) — **COMMITTED**
-2. `PROJECT_STATUS.md` (Current project status, toolchain state, acceptance tracking) — **UPDATED (Stage 9.2 DB Consistency Completed)**
+2. `PROJECT_STATUS.md` (Current project status, toolchain state, acceptance tracking) — **UPDATED (Stage 11 QA & Security Completed)**
 3. `docs/EcoQuest_Master_Prompts_and_Workflow.md` (Master prompt pack and stage definitions) — **COMMITTED**
 4. `docs/PRODUCT_SPEC.md` (Product specification, quiz engine, 10 levels, streaks, missions, challenges) — **COMMITTED**
 5. `docs/TECHNICAL_DECISIONS.md` (Architecture, React/Vite/Tailwind/Supabase stack, RLS, RPC) — **COMMITTED**
 6. `docs/AGENT_HANDOFF.md` (Agent handoff protocol, report format, ChatGPT review gates) — **COMMITTED**
-7. `docs/ACCEPTANCE_CRITERIA.md` (Stage-by-stage acceptance criteria register) — **UPDATED (Stage 9 PASS)**
+7. `docs/ACCEPTANCE_CRITERIA.md` (Stage-by-stage acceptance criteria register) — **UPDATED (Stage 11 PASS)**
 8. `docs/DEPLOYMENT_RUNBOOK.md` (Hosting architecture, env vars, rollback plan, verification checklist) — **COMMITTED**
 9. `docs/KNOWN_ISSUES.md` (Verified issue register with resolved and active items) — **COMMITTED**
 
@@ -69,6 +71,7 @@ All required project documentation files are established and tracked:
 - **Reusable Component Inventory**:
   - `Button`, `Card`, `Badge`, `ProgressBar`, `LevelBadge`, `StreakIndicator`, `Alert`, `Dialog`, `EmptyState`, `LoadingState`, `AnswerOption`, `QuestionCard`.
   - `AuthModal`: Campus-themed dialog for student registration and login with local development notices.
+  - `ArticleModal`: Empirical research reader modal with key takeaways and peer-reviewed citations.
 - **Backend & Database Infrastructure**:
   - `supabase/migrations/20261027000001_initial_schema.sql`: 12 core tables (`profiles`, `user_progression`, `categories`, `questions`, `quiz_attempts`, `daily_missions`, `user_daily_missions_history`, `daily_all_clear_claims`, `badges`, `user_badges`, `challenges`, `user_challenges`, `xp_ledger`).
   - `supabase/migrations/20261027000002_row_level_security.sql`: RLS enabled on all 12 tables; answer keys blocked from client queries; progression and ledger protected against client-side writes.
@@ -76,13 +79,17 @@ All required project documentation files are established and tracked:
   - `supabase/migrations/20261027000004_trusted_gamification_rpc.sql`: Trusted RPC functions `calculate_level_from_xp` and `apply_quiz_gamification` (idempotent XP awards, streak increment/freeze consumption, daily mission tracking, badge awards).
   - `supabase/migrations/20261027000005_seed_data.sql`: Production seed data with peer-reviewed question citations, 7 categories, 10 badges, 3 missions, and 3 challenges.
   - `supabase/migrations/20261027000006_security_hardening.sql`: Profile auto-creation trigger on `auth.users`, role escalation prevention trigger, `get_leaderboard` RPC with direct query privacy, `join_challenge` and `claim_challenge_reward` trusted RPCs with date & target bounds, and least-privilege function execution/table grants.
+  - `supabase/migrations/20261027000007_content_library_and_admin.sql`: `public.articles` schema, foreign key to `categories`, RLS policies for public published reading and admin-only management, and seeded empirical articles.
+  - `supabase/migrations/20261027000008_admin_authorization_and_qa_fixes.sql`: Question RLS `WITH CHECK` hardening, table grants on `questions` and `articles` for `authenticated` role, `admin_manage_question` trusted RPC, `leave_challenge` trusted RPC, resilient question pooling in `start_quiz_attempt`, `'cities'` category addition, and full 21-question bank seeding.
 - **Services & Client Layer**:
-  - `src/services/supabaseClient.ts`: Supabase client singleton, `SupabaseAuthService`, and `SupabaseQuizRpcService` (`startQuizAttempt`, `submitQuizAttempt`, `getLeaderboard`, `joinChallenge`, `claimChallengeReward`) with honest fallback when unconfigured.
-  - `src/providers/AppProviders.tsx`: Integrated authentication state with `isBackendConnected` indicator.
+  - `src/services/supabaseClient.ts`: Supabase client singleton, `SupabaseAuthService`, and `SupabaseQuizRpcService` (`startQuizAttempt`, `submitQuizAttempt`, `getLeaderboard`, `joinChallenge`, `leaveChallenge`, `claimChallengeReward`) with honest fallback when unconfigured.
+  - `src/providers/AppProviders.tsx`: Integrated authentication state with `isBackendConnected` indicator and session restoration hook on mount.
+  - `src/services/adminService.ts`: Curriculum question bank management with role authorization enforcement (`ensureAdmin`).
+  - `src/services/articleService.ts`: Educational article service with role authorization enforcement (`ensureAdmin`).
 - **Development & Build Verification**:
   - `npm run typecheck`: 0 TypeScript errors.
-  - `npm run test`: 97 automated tests passing across 10 test suites.
-  - `npm run build`: Production bundle generated in `dist/` in 962ms (37.65 kB CSS, 547.94 kB JS).
+  - `npm run test`: 122 automated tests passing across 11 test suites.
+  - `npm run build`: Production bundle generated in `dist/` in 1.01s (45.64 kB CSS, 629.66 kB JS).
 
 ---
 
@@ -91,15 +98,15 @@ All required project documentation files are established and tracked:
 | Command | Exit Code | Verified Result |
 |---|---|---|
 | `npm run typecheck` | 0 | Clean TypeScript check (`tsc --noEmit`) with 0 errors |
-| `npm run test` | 0 | 97 Vitest tests passed across 10 test suites |
-| `npm run build` | 0 | Production build generated in `dist/` (37.65 kB CSS, 547.94 kB JS in 962ms) |
+| `npm run test` | 0 | 122 Vitest tests passed across 11 test suites (100% pass rate) |
+| `npm run build` | 0 | Production build generated in `dist/` (45.64 kB CSS, 629.66 kB JS in 1.01s) |
 
 ---
 
 ## 7. Outstanding Decisions and Next Action
 
 - **Outstanding Approvals**:
-  1. Formal sign-off on Stage 9.2 Final Database Consistency Check (`ECO-STAGE-9.2-DB-CONSISTENCY`).
-  2. Authorize staging and committing Stage 9.2 files locally on `main`.
+  1. Formal sign-off on Stage 11 Comprehensive QA & Security Review (`ECO-STAGE-11-QA-SECURITY`).
+  2. Authorize staging and committing Stage 11 changes on `main`.
   3. Authorize configuring Git remote `origin` to `https://github.com/venkatyallapu24/ECO_quiz.git` when live deployment is desired.
-- **Next Eligible Prompt**: Prompt 13 — Stage 10: Content Library, Profiles, and Administration (`ECO-STAGE-10-CONTENT-ADMIN`).
+- **Next Eligible Prompt**: Prompt 14 — Stage 12: Production Readiness (`ECO-STAGE-12-PRODUCTION-READINESS`).
