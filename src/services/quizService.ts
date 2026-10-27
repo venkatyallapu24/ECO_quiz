@@ -87,6 +87,7 @@ const CATEGORY_NAMES: Record<string, { name: string; icon: string }> = {
   water: { name: 'Water & Marine Systems', icon: '💧' },
   food: { name: 'Sustainable Agriculture & Food', icon: '🌾' },
   cities: { name: 'Green Cities & Transit', icon: '🏙️' },
+  policy: { name: 'Environmental Policy & Economics', icon: '⚖️' },
 };
 
 /**

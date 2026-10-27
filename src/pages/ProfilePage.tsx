@@ -340,12 +340,15 @@ export const ProfilePage: React.FC = () => {
             </Card>
 
             <Card className="p-5 flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
-                <LevelBadge level={progression?.level ?? 1} size="md" />
+              <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold shrink-0">
+                <Award className="w-6 h-6" />
               </div>
-              <div>
+              <div className="min-w-0 flex-1">
                 <p className="text-xs text-eco-text-muted uppercase font-bold tracking-wider">Mastery Level</p>
-                <h3 className="text-xl font-extrabold text-eco-text">Level {progression?.level ?? 1}</h3>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <h3 className="text-xl font-extrabold text-eco-text">Level {progression?.level ?? 1}</h3>
+                  <LevelBadge level={progression?.level ?? 1} size="sm" />
+                </div>
                 <p className="text-[11px] text-eco-text-muted">Eco Apprentice</p>
               </div>
             </Card>

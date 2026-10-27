@@ -134,7 +134,7 @@ export const ChallengesPage: React.FC = () => {
         </div>
 
         {/* Type Filter Buttons */}
-        <div className="flex items-center gap-1.5">
+        <div className="flex flex-wrap items-center gap-1.5">
           {types.map((t) => (
             <button
               key={t.id}

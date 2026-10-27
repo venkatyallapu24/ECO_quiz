@@ -12,13 +12,14 @@ export const QuizLauncherPage: React.FC = () => {
   const difficultyParam = searchParams.get('difficulty') as Difficulty | null;
 
   const categories = [
-    { id: 'climate', name: 'Climate Change & Atmosphere', questionsCount: 45, icon: '🌍' },
-    { id: 'biodiversity', name: 'Biodiversity & Ecosystems', questionsCount: 38, icon: '🌿' },
+    { id: 'climate', name: 'Climate Change & Atmosphere', questionsCount: 30, icon: '🌍' },
+    { id: 'biodiversity', name: 'Biodiversity & Ecosystems', questionsCount: 30, icon: '🌿' },
     { id: 'energy', name: 'Renewable Energy & Tech', questionsCount: 30, icon: '⚡' },
-    { id: 'waste', name: 'Circular Economy & Waste', questionsCount: 28, icon: '♻️' },
-    { id: 'water', name: 'Water Resources & Oceans', questionsCount: 32, icon: '💧' },
-    { id: 'food', name: 'Sustainable Agriculture', questionsCount: 25, icon: '🌾' },
-    { id: 'cities', name: 'Green Cities & Transport', questionsCount: 22, icon: '🏙️' },
+    { id: 'waste', name: 'Circular Economy & Waste', questionsCount: 30, icon: '♻️' },
+    { id: 'water', name: 'Water Resources & Oceans', questionsCount: 30, icon: '💧' },
+    { id: 'food', name: 'Sustainable Agriculture', questionsCount: 30, icon: '🌾' },
+    { id: 'cities', name: 'Green Cities & Transport', questionsCount: 30, icon: '🏙️' },
+    { id: 'policy', name: 'Environmental Policy & Economics', questionsCount: 30, icon: '⚖️' },
   ];
 
   const initialCat = categoryParam && categories.some((c) => c.id === categoryParam) ? categoryParam : 'climate';

@@ -67,7 +67,7 @@ export const Navbar: React.FC = () => {
             </Link>
 
             {/* Desktop Navigation Links matching campus style */}
-            <div className="hidden md:flex items-center space-x-1" role="menubar">
+            <div className="hidden lg:flex items-center space-x-0.5 xl:space-x-1" role="menubar">
               {navLinks.map((link) => {
                 const Icon = link.icon;
                 const active = isActive(link.path);
@@ -76,7 +76,7 @@ export const Navbar: React.FC = () => {
                     key={link.path}
                     to={link.path}
                     role="menuitem"
-                    className={`relative inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-eco-forest rounded-lg ${
+                    className={`relative inline-flex items-center gap-1.5 px-2.5 xl:px-3 py-2 text-xs xl:text-sm font-medium transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-eco-forest rounded-lg ${
                       active
                         ? 'text-eco-forest font-bold'
                         : 'text-eco-text-muted hover:text-eco-forest hover:bg-eco-canvas'
@@ -85,7 +85,7 @@ export const Navbar: React.FC = () => {
                     <Icon className={`w-4 h-4 ${active ? 'text-eco-forest' : 'text-eco-sage'}`} />
                     <span>{link.name}</span>
                     {active && (
-                      <span className="absolute bottom-0 left-3 right-3 h-0.5 bg-eco-forest rounded-full" />
+                      <span className="absolute bottom-0 left-2.5 right-2.5 xl:left-3 xl:right-3 h-0.5 bg-eco-forest rounded-full" />
                     )}
                   </Link>
                 );
@@ -94,7 +94,7 @@ export const Navbar: React.FC = () => {
           </div>
 
           {/* User Status / Auth Pill */}
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden lg:flex items-center gap-3">
             {user && progression ? (
               <div className="flex items-center gap-2 bg-eco-canvas-subtle px-3 py-1.5 rounded-full border border-eco-canvas-border">
                 <LevelBadge level={progression.level} size="sm" />
@@ -138,8 +138,17 @@ export const Navbar: React.FC = () => {
             )}
           </div>
 
-          {/* Mobile Hamburger Button */}
-          <div className="flex items-center md:hidden">
+          {/* Mobile & Tablet Controls */}
+          <div className="flex items-center gap-2 lg:hidden">
+            {user && (
+              <Link
+                to="/profile"
+                className="w-7 h-7 rounded-full bg-eco-forest text-white text-xs font-bold flex items-center justify-center hover:bg-eco-forest-hover transition-colors"
+                aria-label={`Profile of ${user.displayName}`}
+              >
+                {user.displayName.charAt(0)}
+              </Link>
+            )}
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -160,7 +169,7 @@ export const Navbar: React.FC = () => {
           id="mobile-nav-menu"
           role="region"
           aria-label="Mobile navigation"
-          className="md:hidden border-t border-eco-canvas-border bg-white px-4 pt-3 pb-5 space-y-1 shadow-eco-md animate-fadeIn"
+          className="lg:hidden border-t border-eco-canvas-border bg-white px-4 pt-3 pb-5 space-y-1 shadow-eco-md animate-fadeIn"
         >
           {user && progression && (
             <div className="flex items-center justify-between pb-3 mb-2 border-b border-eco-canvas-border">
