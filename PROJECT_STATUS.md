@@ -1,10 +1,16 @@
 # EcoQuest — Project Status
 ## 1. Current Stage
 
-**Stage 12 — Production Readiness Assessment (Completed, Awaiting Deployment Approval)**
-- Current Task ID: `ECO-STAGE-12-PRODUCTION-READINESS`
-- Status: Production readiness audit executed across all 7 workstreams. (1) Production Config & Secrets: Verified `.env.example` has only template placeholders and zero secrets; `.gitignore` strictly ignores all local env files; hardened `isSupabaseConfigured()` in `src/services/supabaseClient.ts` with protocol validation and safe try/catch wrapper. (2) Database Migration Readiness: Verified sequential integrity of all 8 SQL migrations; confirmed all `SECURITY DEFINER` functions specify hardened `search_path`; verified RLS across all 13 core tables. Static verification complete; live database checks recorded as NOT TESTED (no staging database provisioned/approved). (3) Authentication & Authorization: Multi-layer protection verified for student vs admin access, role escalation prevention trigger, answer secrecy, and sandbox disclosure. (4) End-to-End User Workflows: Real browser evaluation executed via Google Chrome Puppeteer covering landing page, dashboard, 403 admin block, admin question bank, 7 empirical library articles, challenges, leaderboard, profile, and quiz attempt question flow with answer secrecy verified. (5) Reliability & Performance: Configured `manualChunks` in `vite.config.ts`, eliminating the 500 kB chunk warning and optimizing the bundle into 4 chunks (< 230 kB each). Configured `vercel.json` SPA rewrites and asset caching headers; created `public/_redirects` for universal static host fallback. (6) Automated Testing: Added `src/test/ProductionReadiness.test.ts` bringing automated suite to 133 tests passing across 12 test suites (100% pass rate). (7) Release Preparation: Finalized `docs/DEPLOYMENT_RUNBOOK.md` with sequential migration plan, backup prerequisites, and exact release commands.
-- Progress: Production readiness assessment complete. Executive verdict: CONDITIONALLY READY (code, tests, bundle, and configurations are ready; awaiting user authorization for Git remote push, live Supabase migration application, and Vercel deployment in Stage 13).
+**Question Bank Database Integration & GitHub Push (Completed)**
+- Current Task ID: `ECO-STAGE-13-QUESTION-BANK-AND-GITHUB-PUSH`
+- Status: 
+  - Authoritative 240-question bank across 8 environmental categories (30 per category: 10 easy, 10 medium, 10 hard) integrated into `src/data/serverQuestionBank.ts`.
+  - Global responsive layout fixes implemented for Navbar tablet breakpoint (`lg`), ProfilePage mastery level layout, and Challenges filter wrapping.
+  - Idempotent SQL migration generated at `docs/proposed_migration_20261027000009_expand_question_bank_to_240.sql` (preserving existing 21 IDs from migration 8 and safely mapping 219 new questions).
+  - All 13 test suites (139 tests) passing, clean TypeScript check (`tsc --noEmit`), and production build passing.
+  - Approved changes committed and pushed to `origin/main` (`https://github.com/venkatyallapu24/ECO_quiz.git`) at commit `42d68c4`.
+  - Vercel deployment remains strictly unauthorized and unexecuted.
+- Progress: Complete. Both Tasks A & B executed and verified.
 
 ---
 
@@ -19,34 +25,18 @@
 - **Python Version**: `Python 3.9.6` (Operational)
 - **Node.js & npm**: Node.js LTS `v20.18.0`, npm `10.8.2`, npx `10.8.2`
 - **Optional Tools**: `gh` (not installed), `vercel` (not installed), `brew` (not installed)
-- **Browser Availability**: Safari (`/Applications/Safari.app`), Antigravity IDE browser available (Playwright driver download restricted by sandbox network)
+- **Browser Availability**: Google Chrome / Puppeteer Headless verified operational
 
 ---
 
 ## 3. Git Repository Status
 
 - **Local Repository**: Initialized Git repository on branch `main`.
-- **Commits on `main`**:
-  1. `fff1e32` ("docs: establish EcoQuest project baseline")
-  2. `6fd9a20` ("feat(app): establish Stage 2 application foundation, routes, and tests")
-  3. `c8b0e71` ("feat(ui,landing): implement Stage 3 design system and Stage 4 public landing page")
-  4. `220619e` ("docs: record commit c8b0e71 in PROJECT_STATUS.md")
-  5. `9b34dd5` ("feat(dashboard): implement Stage 5 student progress hub and canonical progression calculations")
-  6. `eeb0868` ("feat(quiz,ui): implement Stage 6 environmental quiz engine and campus UI visual alignment")
-  7. `01b74d3` ("feat(gamification): implement Stage 7 gamification engine, XP matrix, timezone streaks, and badges")
-  8. `5b7be1d` ("docs: record commit 01b74d3 in PROJECT_STATUS.md")
-  9. `e340c78` ("feat(challenges,leaderboard): implement Stage 8 communal challenges and deterministic leaderboards")
-  10. `5f6a814` ("docs: record commit e340c78 in PROJECT_STATUS.md")
-  11. `1bdfb07` ("feat(supabase): implement Stage 9 SQL migrations, RLS policies, trusted RPCs, and auth client")
-  12. `96d97cf` ("docs: record commit 1bdfb07 in PROJECT_STATUS.md")
-  13. `c4f254f` ("fix(security): resolve Stage 9.1 audit findings with hardened migrations, RPCs, and least privilege")
-  14. `be1d34e` ("docs: record commit c4f254f in PROJECT_STATUS.md")
-  15. `65ad8b9` ("fix(security): resolve Stage 9.2 database consistency, direct query privacy, and challenge checks")
-  16. `154cfc6` ("docs: record commit 65ad8b9 in PROJECT_STATUS.md")
-  17. `e027ff6` ("feat(content,admin): implement Stage 10 content library, student profiles, and administration")
-  18. `ef51bfd` ("fix(security): finalize stage 11 QA and authorization hardening")
-- **Current Branch**: `main`
-- **Configured Remote**: None configured locally. Remote target identified as `https://github.com/venkatyallapu24/ECO_quiz.git` (HTTP 200 reachable), pending authorization to attach.
+- **Configured Remote**: `origin` -> `https://github.com/venkatyallapu24/ECO_quiz.git`
+- **Latest Commit on `main`**:
+  - `42d68c4` ("fix: resolve responsive layout issues and expand environmental quiz bank to 240 questions")
+  - `7f77644` ("chore(release): finalize stage 12 production readiness and deployment configuration")
+- **Sync Status**: `HEAD` matches `origin/main` at `42d68c4`. Untracked `.agents/` and gitignored `.env.local` preserved.
 
 ---
 
