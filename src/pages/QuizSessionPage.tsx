@@ -196,14 +196,14 @@ export const QuizSessionPage: React.FC = () => {
       // ArrowRight or Enter to advance
       else if (e.key === 'ArrowRight' || (e.key === 'Enter' && !e.shiftKey)) {
         if (currentIndex < questions.length - 1) {
-          setCurrentIndex((idx) => idx + 1);
+          setCurrentIndex((idx) => Math.min(questions.length - 1, idx + 1));
         } else if (currentIndex === questions.length - 1) {
           handleSubmitQuiz();
         }
       }
       // ArrowLeft to go back (in Practice mode)
       else if (e.key === 'ArrowLeft' && modeParam === 'practice' && currentIndex > 0) {
-        setCurrentIndex((idx) => idx - 1);
+        setCurrentIndex((idx) => Math.max(0, idx - 1));
       }
     };
 
@@ -504,6 +504,10 @@ export const QuizSessionPage: React.FC = () => {
   }
 
   // 4. Active Question View
+  if (!currentQuestion) {
+    return null;
+  }
+
   const progressPercent = Math.round(((currentIndex + 1) / questions.length) * 100);
   const selectedOptionId = selectedAnswers[currentQuestion.id] || null;
 
@@ -648,7 +652,7 @@ export const QuizSessionPage: React.FC = () => {
             <Button
               variant="outline"
               size="md"
-              onClick={() => setCurrentIndex((idx) => idx - 1)}
+              onClick={() => setCurrentIndex((idx) => Math.max(0, idx - 1))}
               leftIcon={<ArrowLeft className="w-4 h-4" />}
             >
               Previous
@@ -694,7 +698,7 @@ export const QuizSessionPage: React.FC = () => {
             <Button
               variant="primary"
               size="md"
-              onClick={() => setCurrentIndex((idx) => idx + 1)}
+              onClick={() => setCurrentIndex((idx) => Math.min(questions.length - 1, idx + 1))}
               rightIcon={<ArrowRight className="w-4 h-4" />}
             >
               Next Question
