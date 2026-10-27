@@ -156,9 +156,9 @@ Criteria must be marked only as:
 
 | # | Criterion | Status | Evidence / Verification Method |
 |---|---|---|---|
-| 12.1 | Production build optimized with bundle analysis | **NOT RUN** | Future stage |
-| 12.2 | Environment variable templates verified without secrets | **NOT RUN** | Future stage |
-| 12.3 | Deployment runbook finalized and rollback procedures documented | **NOT RUN** | Future stage |
+| 12.1 | Production build optimized with bundle analysis | **PASS** | Verified via `vite.config.ts` manualChunks chunking configuration and `npm run build`. 500 kB chunk warning resolved; bundle split into 4 optimized vendor/application chunks (`vendor-icons`: 23.56 kB, `vendor-react`: 162.28 kB, `vendor-supabase`: 214.34 kB, application `index`: 229.83 kB; CSS: 45.64 kB). All individual chunks < 230 kB. SPA route fallback configuration verified (`vercel.json` and `public/_redirects`). |
+| 12.2 | Environment variable templates verified without secrets | **PASS** | Verified in `.env.example`, `.gitignore`, and `ProductionReadiness.test.ts`. Template contains only public placeholders (`your-project-ref`, `your-public-anon-key`). Gitignore strictly excludes all local `.env` and `.pem` variants. `isSupabaseConfigured()` hardened with URL protocol validation and safe try/catch wrapper. |
+| 12.3 | Deployment runbook finalized and rollback procedures documented | **PASS** | Verified in `docs/DEPLOYMENT_RUNBOOK.md`. Sequential migration sequence (1–8) documented with pre-migration snapshot requirement; Vercel SPA configuration, immutable cache headers, and exact release command sequence documented; instantaneous frontend rollback and snapshot recovery procedures established. |
 
 ---
 

@@ -9,6 +9,7 @@ export const isSupabaseConfigured = (): boolean => {
   return (
     typeof supabaseUrl === 'string' &&
     supabaseUrl.trim().length > 0 &&
+    (supabaseUrl.startsWith('https://') || supabaseUrl.startsWith('http://')) &&
     !supabaseUrl.includes('your-project-ref') &&
     typeof supabaseAnonKey === 'string' &&
     supabaseAnonKey.trim().length > 0 &&
@@ -16,10 +17,18 @@ export const isSupabaseConfigured = (): boolean => {
   );
 };
 
+const initSupabaseClient = (): SupabaseClient | null => {
+  if (!isSupabaseConfigured()) return null;
+  try {
+    return createClient(supabaseUrl, supabaseAnonKey);
+  } catch (err) {
+    console.warn('Failed to initialize Supabase client:', err);
+    return null;
+  }
+};
+
 // Create real client if valid URL/Key, otherwise a stub client
-export const supabase: SupabaseClient | null = isSupabaseConfigured()
-  ? createClient(supabaseUrl, supabaseAnonKey)
-  : null;
+export const supabase: SupabaseClient | null = initSupabaseClient();
 
 export interface AuthResponse {
   user: User | null;
